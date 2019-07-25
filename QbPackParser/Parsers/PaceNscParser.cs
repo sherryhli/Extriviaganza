@@ -15,6 +15,7 @@ namespace QbPackParser.Parsers
         private string _level;
         private string _tournament;
         private int _year;
+        private int _roundNumber;
 
         private Dictionary<string, string> _levels = new Dictionary<string, string>()
         {
@@ -29,12 +30,13 @@ namespace QbPackParser.Parsers
         /// <param name="level">The level of the question pack</param>
         /// <param name="tournament">The tournament the pack is from</param>
         /// <param name="year">The year of the tournament</param>
-        public PaceNscParser(string text, string level, string tournament, int year)
+        public PaceNscParser(string text, string level, string tournament, int year, int roundNumber)
         {
             _text = text;
             _level = _levels[level];
             _tournament = tournament;
             _year = year;
+            _roundNumber = roundNumber;
         }
 
         /// <summary>Cleans _text so that it is ready to be split into individual questions</summary>
@@ -101,6 +103,7 @@ namespace QbPackParser.Parsers
                     Level = _level,
                     Tournament = _tournament,
                     Year = _year,
+                    RoundNumber = _roundNumber,
                     Bonus = bonus,
                     Body = body,
                     Answer = answer,
