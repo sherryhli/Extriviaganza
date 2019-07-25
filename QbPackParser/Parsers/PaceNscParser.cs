@@ -44,7 +44,7 @@ namespace QbPackParser.Parsers
         {
             const string zeroWidthSpace = "\u200B";
             const string pageBreak = @"\f";
-            const string header = @"NSC [0-9]{4} - Round [0-9]{2} - Tossups\s+This round is sponsored by ([A-Za-z]+\s*)+";
+            const string header = @"NSC [0-9]{4} - Round [0-9]{2} - Tossups\s+(This round is sponsored by ([A-Za-z]+\s*)+)?";
             const string credits = "<.*>";
             const string bonusPageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Bonuses";
             const string pageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Page [0-9]+ of [0-9]+";
