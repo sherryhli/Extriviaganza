@@ -9,36 +9,20 @@ using QbPackParser.Models;
 
 namespace QbPackParser.Parsers
 {
-    public class PaceNscParser : IParser
+    public class PaceNscParser : BaseParser
     {
-        private string _text;
-        private string _level;
-        private string _tournament;
-        private int _year;
-
-        private Dictionary<string, string> _levels = new Dictionary<string, string>()
-        {
-            {"HS", "High School"},
-            {"MS", "Middle School"},
-            {"C", "Collegiate"},
-            {"T", "Trash"}
-        };
-
         /// <summary>Creates a new instance of PaceNscParser</summary>
         /// <param name="text">The raw text of the question pack</param>
         /// <param name="level">The level of the question pack</param>
         /// <param name="tournament">The tournament the pack is from</param>
         /// <param name="year">The year of the tournament</param>
-        public PaceNscParser(string text, string level, string tournament, int year)
+        public PaceNscParser(string text, string level, string tournament, int year) : base(text, level, tournament, year)
         {
-            _text = text;
-            _level = _levels[level];
-            _tournament = tournament;
-            _year = year;
+
         }
 
-        /// <summary>Cleans _text so that it is ready to be split into individual questions</summary>
-        private void CleanText()
+        /// <summary>Cleans text so that it is ready to be split into individual questions</summary>
+        protected override void CleanText()
         {
             const string zeroWidthSpace = "\u200B";
             const string pageBreak = @"\f";
@@ -48,19 +32,19 @@ namespace QbPackParser.Parsers
             const string bonusPageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Bonuses";
             const string pageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Page [0-9]+ of [0-9]+";
 
-            _text = _text.Trim();
-            _text = _text.Replace(zeroWidthSpace, String.Empty);
-            _text = Regex.Replace(_text, pageBreak, String.Empty);
-            _text = Regex.Replace(_text, tossupHeader, String.Empty);
-            _text = Regex.Replace(_text, sponsorHeader, String.Empty);
-            _text = Regex.Replace(_text, credits, String.Empty);
-            _text = Regex.Split(_text, bonusPageSeparator)[0];
-            _text = Regex.Replace(_text, pageSeparator, String.Empty);
+            base.text = base.text.Trim();
+            base.text = base.text.Replace(zeroWidthSpace, String.Empty);
+            base.text = Regex.Replace(base.text, pageBreak, String.Empty);
+            base.text = Regex.Replace(base.text, tossupHeader, String.Empty);
+            base.text = Regex.Replace(base.text, sponsorHeader, String.Empty);
+            base.text = Regex.Replace(base.text, credits, String.Empty);
+            base.text = Regex.Split(base.text, bonusPageSeparator)[0];
+            base.text = Regex.Replace(base.text, pageSeparator, String.Empty);
         }
 
         /// <summary>Parses the raw text of the questions to obtain relevant information</summary>
         /// <returns>JSON representation of the questions in an array</returns>
-        public string Parse()
+        public override string Parse()
         {
             CleanText();
 
@@ -70,7 +54,7 @@ namespace QbPackParser.Parsers
             const string answerSeparator = "ANSWER: ";
             const string notesPattern = @"\[(.|\n|\r)*\]";
 
-            List<string> tossups = Regex.Split(_text, questionSeparator).ToList();
+            List<string> tossups = Regex.Split(base.text, questionSeparator).ToList();
             if (tossups[0] == "") {
                 tossups.RemoveAt(0);
             }
@@ -98,9 +82,9 @@ namespace QbPackParser.Parsers
 
                 QbQuestion question = new QbQuestion
                 {
-                    Level = _level,
-                    Tournament = _tournament,
-                    Year = _year,
+                    Level = base.level,
+                    Tournament = base.tournament,
+                    Year = base.year,
                     Bonus = bonus,
                     Body = body,
                     Answer = answer,

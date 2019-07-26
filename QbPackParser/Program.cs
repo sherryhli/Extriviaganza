@@ -27,7 +27,7 @@ namespace QbPackParser
 
             if (args[0].ToLower() == "pace")
             {
-                IParser parser = new PaceNscParser(text, level, tournament, year);
+                BaseParser parser = new PaceNscParser(text, level, tournament, year);
                 string result = parser.Parse();
                 Console.WriteLine(result);
             }
