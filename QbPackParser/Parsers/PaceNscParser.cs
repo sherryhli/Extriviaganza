@@ -42,7 +42,8 @@ namespace QbPackParser.Parsers
         {
             const string zeroWidthSpace = "\u200B";
             const string pageBreak = @"\f";
-            const string header = @"NSC [0-9]{4} - Round [0-9]{2} - Tossups\s+(This round is sponsored by ([A-Za-z]+\s*)+)?";
+            const string tossupHeader = @"NSC [0-9]{4} - Round [0-9]{2} - Tossups";
+            const string sponsorHeader = @"This round is sponsored by ([^\s]+\s{0,1})+";
             const string credits = "<.*>";
             const string bonusPageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Bonuses";
             const string pageSeparator = "NSC [0-9]{4} - Round [0-9]{2} - Page [0-9]+ of [0-9]+";
@@ -50,7 +51,8 @@ namespace QbPackParser.Parsers
             _text = _text.Trim();
             _text = _text.Replace(zeroWidthSpace, String.Empty);
             _text = Regex.Replace(_text, pageBreak, String.Empty);
-            _text = Regex.Replace(_text, header, String.Empty);
+            _text = Regex.Replace(_text, tossupHeader, String.Empty);
+            _text = Regex.Replace(_text, sponsorHeader, String.Empty);
             _text = Regex.Replace(_text, credits, String.Empty);
             _text = Regex.Split(_text, bonusPageSeparator)[0];
             _text = Regex.Replace(_text, pageSeparator, String.Empty);
@@ -62,13 +64,16 @@ namespace QbPackParser.Parsers
         {
             CleanText();
 
-            const string questionSeparator = @"\s{2,}[0-9]+\. ";
+            const string questionSeparator = @"\s{5,}[0-9]+\. ";
             const string bonusSeparator = @"\(\*\)";
             const string firstQuestionSeparator = @"1\. ";
             const string answerSeparator = "ANSWER: ";
             const string notesPattern = @"\[(.|\n|\r)*\]";
 
             List<string> tossups = Regex.Split(_text, questionSeparator).ToList();
+            if (tossups[0] == "") {
+                tossups.RemoveAt(0);
+            }
             tossups[0] = Regex.Replace(tossups[0], firstQuestionSeparator, String.Empty);
 
             // foreach loop does not allow assignment of individual elements
