@@ -90,16 +90,11 @@ namespace QbPackParser.Parsers
             {
                 string[] tossupParts = Regex.Split(tossup, bonusSeparator);
                 string bonus = tossupParts[0].Trim();
-                // Console.WriteLine("BONUS: " + bonus);
                 string bodyAnswerNotes = tossupParts[1];
                 string body = Regex.Split(bodyAnswerNotes, answerSeparator)[0].Trim();
-                // Console.WriteLine("BODY: " + body);
                 string answerNotes = Regex.Split(bodyAnswerNotes, answerSeparator)[1];
                 string answer = Regex.Split(answerNotes, notesPattern)[0].Trim();
-                // Console.WriteLine("ANSWER: " + answer);
                 string notes = Regex.Match(answerNotes, notesPattern).ToString().Trim();
-                // Console.WriteLine("NOTES: " + notes);
-                // Console.WriteLine("\n");
 
                 QbQuestion question = new QbQuestion
                 {
