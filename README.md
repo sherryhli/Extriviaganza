@@ -33,7 +33,7 @@ This C# console app may be better named `QbPackParserAndDbLoader`, as the intent
 
 ### QbQuestions REST API
 
-This will be a simple .NET Core API supporting CRUD operations that interacts with a database storing all quizbowl questions to be used in the game. Entity Framework Core will be used as the ORM to map models to the database schema.
+This will be a simple .NET Core API supporting CRUD operations that interacts with a database storing all quizbowl questions to be used in the game. Entity Framework Core will be used as the ORM to map models to the database schema. The main purpose of this API is to add questions to the database and to provide questions to the game backend.
 
 ### Game Backend
 

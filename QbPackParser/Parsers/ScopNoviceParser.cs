@@ -24,13 +24,76 @@ namespace QbPackParser.Parsers
         /// <summary>Cleans text so that it is ready to be split into individual questions</summary>
         protected override void CleanText()
         {
+            const string zeroWidthSpace = "\u200B";
+            const string header = @"[0-9]{4} SCOP Novice [0-9]+\r\n\r\n((Round [0-9]+)|Replacements)\r\n\r\n[A-Za-z\s\r\n•]+Tossups";
+            const string pageSeparator = "\fSCOP Novice 9 · ((Round [0-9]+)|Replacements)\r\nPage [0-9]+ of [0-9]+";
+            const string bonusPageSeparator = "Bonuses|BONUSES";
+            const string pageBreak = @"\f";
 
+            base.text = base.text.Replace(zeroWidthSpace, String.Empty);
+            base.text = Regex.Replace(base.text, header, String.Empty);
+            base.text = Regex.Replace(base.text, pageSeparator, String.Empty);
+            base.text = Regex.Split(base.text, bonusPageSeparator)[0];
+            base.text = base.text.Replace(pageBreak, String.Empty);
         }
 
+        // TODO: Abstract more functionalities into the base class
         /// <summary>Parses the raw text of the questions to obtain relevant information</summary>
         /// <returns>JSON representation of the questions in an array</returns>
-        public override string Parse() {
-            return String.Empty;
+        public override string Parse()
+        {
+            CleanText();
+
+            const string questionSeparator = @"\([0-9]+\) ";
+            const string bonusSeparator = @"\(\*\)";
+            const string answerSeparator = "ANSWER: ";
+            const string notesPattern = @"\((.|\n|\r)*\)";
+
+            List<string> tossups = Regex.Split(base.text, questionSeparator).ToList();
+            if (tossups[0] == "\r\n\r\n")
+            {
+                tossups.RemoveAt(0);
+            }
+
+            List<QbQuestion> jsonQuestions = new List<QbQuestion>();
+
+            foreach (string tossup in tossups)
+            {
+                string[] tossupParts = Regex.Split(tossup, bonusSeparator);
+                string bonus = tossupParts[0].Trim();
+                string bodyAnswerNotes = tossupParts[1];
+                string body = Regex.Split(bodyAnswerNotes, answerSeparator)[0].Trim();
+                string answerNotes = Regex.Split(bodyAnswerNotes, answerSeparator)[1];
+                string answer = Regex.Split(answerNotes, notesPattern)[0].Trim();
+                string notes = Regex.Match(answerNotes, notesPattern).ToString().Trim();
+
+                QbQuestion question = new QbQuestion
+                {
+                    Level = base.level,
+                    Tournament = base.tournament,
+                    Year = base.year,
+                    Bonus = bonus,
+                    Body = body,
+                    Answer = answer,
+                    Notes = notes
+                };
+
+                jsonQuestions.Add(question);
+            }
+
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    OverrideSpecifiedNames = false
+                }
+            };
+
+            return JsonConvert.SerializeObject(jsonQuestions, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
         }
     }
 }

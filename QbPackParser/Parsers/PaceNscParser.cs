@@ -63,9 +63,9 @@ namespace QbPackParser.Parsers
             // foreach loop does not allow assignment of individual elements
             for (int i = 0; i < tossups.Count; i++)
             {
-                tossups[i] = tossups[i].Replace("\n", "");
-                tossups[i] = tossups[i].Replace("\r", "");
-                tossups[i] = tossups[i].Replace("\r\n", "");
+                tossups[i] = tossups[i].Replace("\n", String.Empty);
+                tossups[i] = tossups[i].Replace("\r", String.Empty);
+                tossups[i] = tossups[i].Replace("\r\n", String.Empty);
             }
 
             List<QbQuestion> jsonQuestions = new List<QbQuestion>();

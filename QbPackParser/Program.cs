@@ -15,6 +15,9 @@ namespace QbPackParser
         // 5th arg is year of tournament
         public static void Main(string[] args)
         {
+            // For testing purposes
+            Console.OutputEncoding = Encoding.UTF8;
+
             if (args.Length != 5)
             {
                 throw new Exception("Wrong number of arguments, expected 5, received " + args.Length.ToString());
@@ -25,13 +28,20 @@ namespace QbPackParser
             string tournament = args[3];
             int year = Int32.Parse(args[4]);
 
+            BaseParser parser;
+
             if (args[0].ToLower() == "pace")
             {
-                BaseParser parser = new PaceNscParser(text, level, tournament, year);
-                string result = parser.Parse();
-                Console.WriteLine(result);
+                parser = new PaceNscParser(text, level, tournament, year);
+            }
+            else
+            {
+                parser = new ScopNoviceParser(text, level, tournament, year);
             }
             // TODO: other parsers
+
+            string result = parser.Parse();
+            Console.WriteLine(result);
         }
     }
 }

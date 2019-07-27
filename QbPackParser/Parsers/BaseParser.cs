@@ -2,6 +2,7 @@ using System.Collections.Generic;
 
 namespace QbPackParser.Parsers
 {
+    // TODO: Further abstract parser properties into this class
     public abstract class BaseParser
     {
         protected string text { get; set; }
