@@ -45,7 +45,7 @@ namespace QbPackParser.Parsers
             CleanText();
 
             const string questionSeparator = @"\([0-9]+\) ";
-            const string bonusSeparator = @"\(\*\)";
+            const string powerSeparator = @"\(\*\)";
             const string answerSeparator = "ANSWER: ";
             const string notesPattern = @"\((.|\n|\r)*\)";
 
@@ -59,8 +59,8 @@ namespace QbPackParser.Parsers
 
             foreach (string tossup in tossups)
             {
-                string[] tossupParts = Regex.Split(tossup, bonusSeparator);
-                string bonus = tossupParts[0].Trim();
+                string[] tossupParts = Regex.Split(tossup, powerSeparator);
+                string power = tossupParts[0].Trim();
                 string bodyAnswerNotes = tossupParts[1];
                 string body = Regex.Split(bodyAnswerNotes, answerSeparator)[0].Trim();
                 string answerNotes = Regex.Split(bodyAnswerNotes, answerSeparator)[1];
@@ -72,7 +72,7 @@ namespace QbPackParser.Parsers
                     Level = base.level,
                     Tournament = base.tournament,
                     Year = base.year,
-                    Bonus = bonus,
+                    Power = power,
                     Body = body,
                     Answer = answer,
                     Notes = notes
