@@ -1,5 +1,3 @@
-using Newtonsoft.Json;
-using Newtonsoft.Json.Serialization;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -55,7 +53,7 @@ namespace QbPackParser.Parsers
                 tossups.RemoveAt(0);
             }
 
-            List<QbQuestion> jsonQuestions = new List<QbQuestion>();
+            List<QbQuestion> questions = new List<QbQuestion>();
 
             foreach (string tossup in tossups)
             {
@@ -78,22 +76,9 @@ namespace QbPackParser.Parsers
                     Notes = notes
                 };
 
-                jsonQuestions.Add(question);
+                questions.Add(question);
             }
-
-            DefaultContractResolver contractResolver = new DefaultContractResolver
-            {
-                NamingStrategy = new CamelCaseNamingStrategy
-                {
-                    OverrideSpecifiedNames = false
-                }
-            };
-
-            return JsonConvert.SerializeObject(jsonQuestions, new JsonSerializerSettings
-            {
-                ContractResolver = contractResolver,
-                Formatting = Formatting.Indented
-            });
+            return SerializeQuestionsToJson(questions);
         }
     }
 }

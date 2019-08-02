@@ -1,4 +1,8 @@
+using Newtonsoft.Json;
+using Newtonsoft.Json.Serialization;
 using System.Collections.Generic;
+
+using QbPackParser.Models;
 
 namespace QbPackParser.Parsers
 {
@@ -37,5 +41,24 @@ namespace QbPackParser.Parsers
         /// <summary>Parses the raw text of the questions to obtain relevant information</summary>
         /// <returns>JSON representation of the questions in an array</returns>
         public abstract string Parse();
+
+        /// <summary>Serializes a list of QbQuestions into JSON</summary>
+        /// <returns>JSON representation of the questions in an array</returns>
+        protected string SerializeQuestionsToJson(List<QbQuestion> questions)
+        {
+            DefaultContractResolver contractResolver = new DefaultContractResolver
+            {
+                NamingStrategy = new CamelCaseNamingStrategy
+                {
+                    OverrideSpecifiedNames = false
+                }
+            };
+
+            return JsonConvert.SerializeObject(questions, new JsonSerializerSettings
+            {
+                ContractResolver = contractResolver,
+                Formatting = Formatting.Indented
+            });
+        }
     }
 }
