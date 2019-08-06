@@ -2,7 +2,7 @@ namespace QbPackParser.Models
 {
     public class QbQuestion
     {
-        public string Level { get; set; }
+        public int Level { get; set; }
         public string Tournament { get; set; }
         public int Year { get; set; }
         public string Power { get; set; }

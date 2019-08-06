@@ -10,16 +10,17 @@ namespace QbPackParser.Parsers
     public abstract class BaseParser
     {
         protected string text { get; set; }
-        protected string level { get; set; }
+        protected int level { get; set; }
         protected string tournament { get; set; }
         protected int year { get; set; }
 
-        private Dictionary<string, string> levels = new Dictionary<string, string>()
+        // TODO: Consider changing to Enum
+        private Dictionary<string, int> levels = new Dictionary<string, int>()
         {
-            {"HS", "High School"},
-            {"MS", "Middle School"},
-            {"C", "Collegiate"},
-            {"T", "Trash"}
+            {"MS", 1},
+            {"HS", 2},
+            {"C", 3},
+            {"T", 4}
         };
 
         /// <summary>Initalizes fields of the BaseParser</summary>
