@@ -2,7 +2,7 @@
 
 ## Requirements
 * .NET Core 2.2
-* Newtonsoft.Json v12.0.2
+* Newtonsoft.Json
 
 ## Build
 
