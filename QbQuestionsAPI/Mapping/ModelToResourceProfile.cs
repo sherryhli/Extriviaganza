@@ -10,7 +10,7 @@ namespace QbQuestionsAPI.Mapping
     {
         public ModelToResourceProfile()
         {
-            CreateMap<QbQuestion, QbQuestionsResource>()
+            CreateMap<QbQuestion, QbQuestionResource>()
                 .ForMember(src => src.Level,
                            opt => opt.MapFrom(src => src.Level.ToDescriptionString()));
         }

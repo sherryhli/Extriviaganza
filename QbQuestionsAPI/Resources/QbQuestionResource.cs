@@ -1,6 +1,6 @@
 namespace QbQuestionsAPI.Resources
 {
-    public class QbQuestionsResource
+    public class QbQuestionResource
     {
         public int Id { get; set; }
         public string Level { get; set; }

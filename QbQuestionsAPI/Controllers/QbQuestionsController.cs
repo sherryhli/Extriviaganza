@@ -22,10 +22,10 @@ namespace QbQuestionsAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<QbQuestionsResource> GetAsync(int id)
+        public async Task<QbQuestionResource> GetAsync(int id)
         {
             var question = await _qbQuestionService.GetAsync(id);
-            var resources = _mapper.Map<QbQuestion, QbQuestionsResource>(question);
+            var resources = _mapper.Map<QbQuestion, QbQuestionResource>(question);
 
             return resources;
         }
@@ -47,7 +47,7 @@ namespace QbQuestionsAPI.Controllers
                 return BadRequest(result.Message);
             }
 
-            var questionResource = _mapper.Map<QbQuestion, QbQuestionsResource>(result.QbQuestion);
+            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
 
@@ -67,7 +67,7 @@ namespace QbQuestionsAPI.Controllers
                 return BadRequest(result.Message);
             }
 
-            var questionResource = _mapper.Map<QbQuestion, QbQuestionsResource>(result.QbQuestion);
+            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
     }
