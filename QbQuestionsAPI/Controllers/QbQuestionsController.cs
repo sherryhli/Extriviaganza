@@ -30,6 +30,7 @@ namespace QbQuestionsAPI.Controllers
             return resources;
         }
 
+        // TODO: Post array of questions
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] SaveQbQuestionsResource resource)
         {
@@ -40,6 +41,26 @@ namespace QbQuestionsAPI.Controllers
 
             var question = _mapper.Map<SaveQbQuestionsResource, QbQuestion>(resource);
             var result = await _qbQuestionService.SaveAsync(question);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+
+            var questionResource = _mapper.Map<QbQuestion, QbQuestionsResource>(result.QbQuestion);
+            return Ok(questionResource);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> PutAsync(int id, [FromBody] SaveQbQuestionsResource resource)
+        {
+            if (!ModelState.IsValid)
+            {
+                return BadRequest(ModelState.GetErrorMessages());
+            }
+
+            var question = _mapper.Map<SaveQbQuestionsResource, QbQuestion>(resource);
+            var result = await _qbQuestionService.UpdateAsync(id, question);
 
             if (!result.Success)
             {

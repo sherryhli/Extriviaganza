@@ -38,5 +38,35 @@ namespace QbQuestionsAPI.Services
                 return new QbQuestionResponse($"An error occurred when saving the question: {ex.Message}");
             }
         }
+
+        public async Task<QbQuestionResponse> UpdateAsync(int id, QbQuestion qbQuestion)
+        {
+            var oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
+
+            if (oldQuestion == null)
+            {
+                return new QbQuestionResponse("Question not found.");
+            }
+
+            oldQuestion.Level = qbQuestion.Level;
+            oldQuestion.Tournament = qbQuestion.Tournament;
+            oldQuestion.Year = qbQuestion.Year;
+            oldQuestion.Power = qbQuestion.Power;
+            oldQuestion.Body = qbQuestion.Body;
+            oldQuestion.Answer = qbQuestion.Answer;
+            oldQuestion.Notes = qbQuestion.Notes;
+
+            try
+            {
+                _qbQuestionRepository.Update(oldQuestion);
+                await _unitOfWork.CompleteAsync();
+
+                return new QbQuestionResponse(oldQuestion);
+            }
+            catch (Exception ex)
+            {
+                return new QbQuestionResponse($"An error occurred when updating the question: {ex.Message}");
+            }
+        }
     }
 }

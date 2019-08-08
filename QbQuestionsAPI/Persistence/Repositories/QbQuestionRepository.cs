@@ -24,5 +24,10 @@ namespace QbQuestionsAPI.Persistence.Repositories
         {
             await _context.QbQuestions.AddAsync(qbQuestion);
         }
+
+        public void Update(QbQuestion qbQuestion)
+        {
+            _context.Update(qbQuestion);
+        }
     }
 }
