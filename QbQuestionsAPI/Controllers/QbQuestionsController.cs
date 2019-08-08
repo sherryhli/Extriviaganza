@@ -70,5 +70,19 @@ namespace QbQuestionsAPI.Controllers
             var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
+
+        [HttpDelete("{id}")]
+        public async Task<IActionResult> DeleteAsync(int id)
+        {
+            var result = await _qbQuestionService.DeleteAsync(id);
+
+            if (!result.Success)
+            {
+                return BadRequest(result.Message);
+            }
+            
+            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
+            return Ok(questionResource);
+        }
     }
 }

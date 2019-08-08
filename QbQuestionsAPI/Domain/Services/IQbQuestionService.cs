@@ -10,5 +10,6 @@ namespace QbQuestionsAPI.Domain.Services
         Task<QbQuestion> GetAsync(int id);
         Task<QbQuestionResponse> SaveAsync(QbQuestion qbQuestion);
         Task<QbQuestionResponse> UpdateAsync(int id, QbQuestion qbQuestion);
+        Task<QbQuestionResponse> DeleteAsync(int id);
     }
 }

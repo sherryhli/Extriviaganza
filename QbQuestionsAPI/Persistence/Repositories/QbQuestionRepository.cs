@@ -27,7 +27,12 @@ namespace QbQuestionsAPI.Persistence.Repositories
 
         public void Update(QbQuestion qbQuestion)
         {
-            _context.Update(qbQuestion);
+            _context.QbQuestions.Update(qbQuestion);
+        }
+
+        public void Remove(QbQuestion qbQuestion)
+        {
+            _context.QbQuestions.Remove(qbQuestion);
         }
     }
 }

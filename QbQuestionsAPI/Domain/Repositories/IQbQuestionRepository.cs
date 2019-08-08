@@ -9,5 +9,6 @@ namespace QbQuestionsAPI.Domain.Repositories
         Task<QbQuestion> FindByIdAsync(int id);
         Task AddAsync(QbQuestion qbQuestion);
         void Update(QbQuestion qbQuestion);
+        void Remove(QbQuestion qbQuestion);
     }
 }

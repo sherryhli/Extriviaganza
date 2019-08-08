@@ -68,5 +68,27 @@ namespace QbQuestionsAPI.Services
                 return new QbQuestionResponse($"An error occurred when updating the question: {ex.Message}");
             }
         }
+
+        public async Task<QbQuestionResponse> DeleteAsync(int id)
+        {
+            var oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
+
+            if (oldQuestion == null)
+            {
+                return new QbQuestionResponse("Question not found.");
+            }
+
+            try
+            {
+                _qbQuestionRepository.Remove(oldQuestion);
+                await _unitOfWork.CompleteAsync();
+
+                return new QbQuestionResponse(oldQuestion);
+            }
+            catch (Exception ex)
+            {
+                return new QbQuestionResponse($"An error occurred when deleting the question: {ex.Message}");
+            }
+        }
     }
 }
