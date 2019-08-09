@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.KeyVault;
+using Microsoft.Azure.KeyVault.Models;
 using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
@@ -31,7 +32,7 @@ namespace QbQuestionsAPI
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            var connectionString = GetConnectionString().Result;
+            string connectionString = GetConnectionString().Result;
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
             services.AddScoped<IQbQuestionRepository, QbQuestionRepository>();
@@ -63,7 +64,7 @@ namespace QbQuestionsAPI
         {
             AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
             KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            var secret = await keyVaultClient.GetSecretAsync("https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsDbConnectionString").ConfigureAwait(false);
+            SecretBundle secret = await keyVaultClient.GetSecretAsync("https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsDbConnectionString").ConfigureAwait(false);
             return secret.Value;
         }
     }

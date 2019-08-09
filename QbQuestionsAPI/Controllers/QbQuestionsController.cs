@@ -5,6 +5,7 @@ using System.Threading.Tasks;
 
 using QbQuestionsAPI.Domain.Models;
 using QbQuestionsAPI.Domain.Services;
+using QbQuestionsAPI.Domain.Services.Communication;
 using QbQuestionsAPI.Extensions;
 using QbQuestionsAPI.Resources;
 
@@ -25,10 +26,10 @@ namespace QbQuestionsAPI.Controllers
         [HttpGet("{id}")]
         public async Task<QbQuestionResource> GetAsync(int id)
         {
-            var question = await _qbQuestionService.GetAsync(id);
-            var resources = _mapper.Map<QbQuestion, QbQuestionResource>(question);
+            QbQuestion question = await _qbQuestionService.GetAsync(id);
+            QbQuestionResource resource = _mapper.Map<QbQuestion, QbQuestionResource>(question);
 
-            return resources;
+            return resource;
         }
 
         [HttpPost]
@@ -39,14 +40,14 @@ namespace QbQuestionsAPI.Controllers
                 return BadRequest(ModelState.GetErrorMessages());
             }
 
-            var resourcesList = new List<SaveQbQuestionResource>(resources);
-            var questions = _mapper.Map<List<SaveQbQuestionResource>, List<QbQuestion>>(resourcesList);
+            List<SaveQbQuestionResource> resourcesList = new List<SaveQbQuestionResource>(resources);
+            List<QbQuestion> questions = _mapper.Map<List<SaveQbQuestionResource>, List<QbQuestion>>(resourcesList);
 
             List<QbQuestionResource> resultsResources = new List<QbQuestionResource>();
 
-            foreach (var question in questions)
+            foreach (QbQuestion question in questions)
             {
-                var result = await _qbQuestionService.SaveAsync(question);
+                QbQuestionResponse result = await _qbQuestionService.SaveAsync(question);
 
                 if (!result.Success)
                 {
@@ -67,29 +68,29 @@ namespace QbQuestionsAPI.Controllers
                 return BadRequest(ModelState.GetErrorMessages());
             }
 
-            var question = _mapper.Map<SaveQbQuestionResource, QbQuestion>(resource);
-            var result = await _qbQuestionService.UpdateAsync(id, question);
+            QbQuestion question = _mapper.Map<SaveQbQuestionResource, QbQuestion>(resource);
+            QbQuestionResponse result = await _qbQuestionService.UpdateAsync(id, question);
 
             if (!result.Success)
             {
                 return BadRequest(result.Message);
             }
 
-            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
+            QbQuestionResource questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
 
         [HttpDelete("{id}")]
         public async Task<IActionResult> DeleteAsync(int id)
         {
-            var result = await _qbQuestionService.DeleteAsync(id);
+            QbQuestionResponse result = await _qbQuestionService.DeleteAsync(id);
 
             if (!result.Success)
             {
                 return BadRequest(result.Message);
             }
 
-            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
+            QbQuestionResource questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
     }
