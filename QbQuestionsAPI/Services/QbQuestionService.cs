@@ -41,7 +41,7 @@ namespace QbQuestionsAPI.Services
 
         public async Task<QbQuestionResponse> UpdateAsync(int id, QbQuestion qbQuestion)
         {
-            var oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
+            QbQuestion oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
 
             if (oldQuestion == null)
             {
@@ -71,7 +71,7 @@ namespace QbQuestionsAPI.Services
 
         public async Task<QbQuestionResponse> DeleteAsync(int id)
         {
-            var oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
+            QbQuestion oldQuestion = await _qbQuestionRepository.FindByIdAsync(id);
 
             if (oldQuestion == null)
             {

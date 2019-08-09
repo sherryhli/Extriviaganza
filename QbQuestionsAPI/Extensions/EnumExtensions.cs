@@ -8,7 +8,7 @@ namespace QbQuestionsAPI.Extensions
         public static string ToDescriptionString<TEnum>(this TEnum @enum)
         {
             FieldInfo info = @enum.GetType().GetField(@enum.ToString());
-            var attributes = (DescriptionAttribute[])info.GetCustomAttributes(typeof(DescriptionAttribute), false);
+            DescriptionAttribute[] attributes = (DescriptionAttribute[])info.GetCustomAttributes(typeof(DescriptionAttribute), false);
 
             return attributes?[0].Description ?? @enum.ToString();
         }
