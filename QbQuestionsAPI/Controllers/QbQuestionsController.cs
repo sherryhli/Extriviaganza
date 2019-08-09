@@ -1,5 +1,6 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Mvc;
+using System.Collections.Generic;
 using System.Threading.Tasks;
 
 using QbQuestionsAPI.Domain.Models;
@@ -30,25 +31,32 @@ namespace QbQuestionsAPI.Controllers
             return resources;
         }
 
-        // TODO: Post array of questions
         [HttpPost]
-        public async Task<IActionResult> PostAsync([FromBody] SaveQbQuestionResource resource)
+        public async Task<IActionResult> PostAsync([FromBody] SaveQbQuestionResource[] resources)
         {
             if (!ModelState.IsValid)
             {
                 return BadRequest(ModelState.GetErrorMessages());
             }
 
-            var question = _mapper.Map<SaveQbQuestionResource, QbQuestion>(resource);
-            var result = await _qbQuestionService.SaveAsync(question);
+            var resourcesList = new List<SaveQbQuestionResource>(resources);
+            var questions = _mapper.Map<List<SaveQbQuestionResource>, List<QbQuestion>>(resourcesList);
 
-            if (!result.Success)
+            List<QbQuestionResource> resultsResources = new List<QbQuestionResource>();
+
+            foreach (var question in questions)
             {
-                return BadRequest(result.Message);
+                var result = await _qbQuestionService.SaveAsync(question);
+
+                if (!result.Success)
+                {
+                    return BadRequest(result.Message);
+                }
+
+                resultsResources.Add(_mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion));
             }
 
-            var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
-            return Ok(questionResource);
+            return Ok(resultsResources);
         }
 
         [HttpPut("{id}")]
@@ -80,7 +88,7 @@ namespace QbQuestionsAPI.Controllers
             {
                 return BadRequest(result.Message);
             }
-            
+
             var questionResource = _mapper.Map<QbQuestion, QbQuestionResource>(result.QbQuestion);
             return Ok(questionResource);
         }
