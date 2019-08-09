@@ -2,7 +2,7 @@ using System.ComponentModel.DataAnnotations;
 
 namespace QbQuestionsAPI.Resources
 {
-    public class SaveQbQuestionsResource
+    public class SaveQbQuestionResource
     {
         [Required]
         [Range(1, 4)]

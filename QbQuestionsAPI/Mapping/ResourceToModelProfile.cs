@@ -9,7 +9,7 @@ namespace QbQuestionsAPI.Mapping
     {
         public ResourceToModelProfile()
         {
-            CreateMap<SaveQbQuestionsResource, QbQuestion>()
+            CreateMap<SaveQbQuestionResource, QbQuestion>()
                 .ForMember(src => src.Level,
                            opt => opt.MapFrom(src => (ETournamentLevel)src.Level));
         }
