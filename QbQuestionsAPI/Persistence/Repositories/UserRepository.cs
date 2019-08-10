@@ -20,6 +20,12 @@ namespace QbQuestionsAPI.Persistence.Repositories
         public bool IsValidUser(User user)
         {
             User dbUser = _context.Users.Where(u => u.Username == user.Username).FirstOrDefault();
+
+            if (dbUser == null)
+            {
+                return false;
+            }
+            
             string passwordHash;
 
             // Reference: https://www.c-sharpcorner.com/article/compute-sha256-hash-in-c-sharp/
