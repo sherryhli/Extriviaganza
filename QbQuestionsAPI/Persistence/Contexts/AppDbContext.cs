@@ -33,6 +33,7 @@ namespace QbQuestionsAPI.Persistence.Contexts
             builder.Entity<User>().HasKey(u => u.Id);
             builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
             builder.Entity<User>().Property(u => u.Username).IsRequired().HasMaxLength(30);
+            // Hashed passwords using SHA256 always have length 64
             builder.Entity<User>().Property(u => u.Password).IsRequired().HasMaxLength(64);
         }
     }

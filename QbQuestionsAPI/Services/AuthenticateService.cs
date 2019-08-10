@@ -42,14 +42,14 @@ namespace QbQuestionsAPI.Services
             const string issuerSigningKeyId = "https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsIssuerSigningKey";
             _tokenPayload.Secret = GetKeyVaultSecret(issuerSigningKeyId).Result;
 
-            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_tokenPayload.Secret));
+            SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_tokenPayload.Secret));
             SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
 
             JwtSecurityToken jwtToken = new JwtSecurityToken(
                 _tokenPayload.Issuer,
                 _tokenPayload.Audience,
                 claim,
-                expires: DateTime.Now.AddMinutes(_tokenPayload.AccessExpiration),
+                expires: DateTime.Now.AddSeconds(_tokenPayload.AccessExpiration),
                 signingCredentials: credentials
             );
 

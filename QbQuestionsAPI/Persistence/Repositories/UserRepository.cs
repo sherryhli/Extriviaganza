@@ -1,5 +1,5 @@
 using System.Linq;
-using System.Security.Cryptography;  
+using System.Security.Cryptography;
 using System.Text;
 
 using QbQuestionsAPI.Domain.Models;
@@ -19,22 +19,22 @@ namespace QbQuestionsAPI.Persistence.Repositories
 
         public bool IsValidUser(User user)
         {
-            return true;
-            // User dbUser = _context.Users.Where(u => u.Username == user.Username).FirstOrDefault();
-            // string passwordHash;
+            User dbUser = _context.Users.Where(u => u.Username == user.Username).FirstOrDefault();
+            string passwordHash;
 
-            // using (SHA256 sha256Hash = SHA256.Create())  
-            // {  
-            //     byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(user.Password));  
-            //     StringBuilder sb = new StringBuilder();  
-            //     for (int i = 0; i < bytes.Length; i++)  
-            //     {  
-            //         sb.Append(bytes[i].ToString("x2"));  
-            //     }  
-            //     passwordHash = sb.ToString();
-            // }
+            // Reference: https://www.c-sharpcorner.com/article/compute-sha256-hash-in-c-sharp/
+            using (SHA256 sha256Hash = SHA256.Create())
+            {
+                byte[] bytes = sha256Hash.ComputeHash(Encoding.UTF8.GetBytes(user.Password));
+                StringBuilder sb = new StringBuilder();
+                for (int i = 0; i < bytes.Length; i++)
+                {
+                    sb.Append(bytes[i].ToString("x2"));
+                }
+                passwordHash = sb.ToString();
+            }
 
-            // return passwordHash == dbUser.Password;
+            return passwordHash == dbUser.Password;
         }
     }
 }

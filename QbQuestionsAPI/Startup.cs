@@ -45,14 +45,16 @@ namespace QbQuestionsAPI
             tokenPayload.Secret = GetKeyVaultSecret(issuerSigningKeyId).Result;
 
             services
-                .AddAuthentication(x => {
+                .AddAuthentication(x =>
+                {
                     x.DefaultAuthenticateScheme = JwtBearerDefaults.AuthenticationScheme;
                     x.DefaultChallengeScheme = JwtBearerDefaults.AuthenticationScheme;
                 })
-                .AddJwtBearer(x => {
+                .AddJwtBearer(x =>
+                {
                     x.RequireHttpsMetadata = false;
                     x.SaveToken = true;
-                    x.TokenValidationParameters = 
+                    x.TokenValidationParameters =
                         new TokenValidationParameters()
                         {
                             ValidateIssuerSigningKey = true,
@@ -94,11 +96,10 @@ namespace QbQuestionsAPI
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
-            app.UseMvc();
             app.UseCors(x => x.AllowAnyOrigin().AllowAnyMethod().AllowAnyHeader());
             app.UseAuthentication();
             app.UseHttpsRedirection();
+            app.UseMvc();
         }
 
         // TODO: Move this out to a secret management service
