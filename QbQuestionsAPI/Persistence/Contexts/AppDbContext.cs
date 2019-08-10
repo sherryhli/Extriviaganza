@@ -7,6 +7,7 @@ namespace QbQuestionsAPI.Persistence.Contexts
     public class AppDbContext : DbContext
     {
         public DbSet<QbQuestion> QbQuestions { get; set; }
+        public DbSet<User> Users { get; set; }
 
         public AppDbContext(DbContextOptions<AppDbContext> options) : base(options)
         {
@@ -27,6 +28,13 @@ namespace QbQuestionsAPI.Persistence.Contexts
             builder.Entity<QbQuestion>().Property(q => q.Body).IsRequired();
             builder.Entity<QbQuestion>().Property(q => q.Answer).IsRequired().HasMaxLength(50);
             builder.Entity<QbQuestion>().Property(q => q.Notes).IsRequired(false).HasMaxLength(250);
+
+            builder.Entity<User>().ToTable("Users");
+            builder.Entity<User>().HasKey(u => u.Id);
+            builder.Entity<User>().Property(u => u.Id).IsRequired().ValueGeneratedOnAdd();
+            builder.Entity<User>().Property(u => u.Username).IsRequired().HasMaxLength(30);
+            // Hashed passwords using SHA256 always have length 64
+            builder.Entity<User>().Property(u => u.Password).IsRequired().HasMaxLength(64);
         }
     }
 }
