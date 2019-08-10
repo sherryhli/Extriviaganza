@@ -12,6 +12,7 @@ namespace QbQuestionsAPI.Mapping
             CreateMap<SaveQbQuestionResource, QbQuestion>()
                 .ForMember(src => src.Level,
                            opt => opt.MapFrom(src => (ETournamentLevel)src.Level));
+            CreateMap<AuthenticateUserResource, User>();
         }
     }
 }
