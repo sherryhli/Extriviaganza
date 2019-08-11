@@ -21,12 +21,12 @@ if ( Test-Path -Path $inputFile -PathType Container ) {
     foreach ($file in $files) {
         $params = $parserName, $file.FullName, $level, $tournament, $year
         # Printing params in case problematic files need to be traced
-        Write-Host $params
+        Write-Host $params -ForegroundColor Yellow
         & "$parser" $params
    }
 }
 else {
     $params = $parserName, $inputFile.FullName, $level, $tournament, $year
-    Write-Host $params
+    Write-Host $params -ForegroundColor Yellow
     & "$parser" $params
 }
