@@ -78,6 +78,11 @@ namespace QbPackParser.Parsers
                 string answer = Regex.Split(answerNotes, notesPattern)[0].Trim();
                 string notes = Regex.Match(answerNotes, notesPattern).ToString().Trim();
 
+                if (!string.IsNullOrEmpty(notes))
+                {
+                    notes = notes.Split('[')[1].Split(']')[0];
+                }
+                
                 QbQuestion question = new QbQuestion
                 {
                     Level = base.level,
