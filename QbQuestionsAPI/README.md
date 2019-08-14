@@ -2,6 +2,8 @@
 
 A REST API built with .NET Core.
 
+Root URL: [http://qbquestionsapi.azurewebsites.net](http://qbquestionsapi.azurewebsites.net), see [endpoints](#endpoints) for available routes. A bearer token is required.
+
 ## Requirements
 
 * .NET Core 2.2
@@ -128,4 +130,13 @@ Sample response: `200 OK`
     "answer": "Louis Mountbatten",
     "notes": "or 1st Earl Mountbatten of Burma, accept Lord Mountbatten"
 }
+```
+
+## Deployment
+
+This API is containerized with Docker and deployed to Azure App Services. Images are pushed to a private Azure Container Registry where they are used by App Services to create a web app.
+
+Ensure that outbound IPs of the web app are added to database security settings. Obtain IPs the Azure CLI:
+```
+az webapp show --resource-group <group_name> --name <app_name> --query outboundIpAddresses --output tsv
 ```
