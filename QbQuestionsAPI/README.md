@@ -136,7 +136,12 @@ Sample response: `200 OK`
 
 This API is containerized with Docker and deployed to Azure App Services. Images are pushed to a private Azure Container Registry where they are used by App Services to create a web app.
 
-Ensure that outbound IPs of the web app are added to database security settings. Obtain IPs the Azure CLI:
+Ensure that outbound IPs of the web app are added to database security settings. Obtain IPs with the Azure CLI:
 ```
 az webapp show --resource-group <group_name> --name <app_name> --query outboundIpAddresses --output tsv
+```
+
+The app runs on port 80, and it has already been configured to do so but if this ever needs to be updated, run:
+```
+az webapp config appsettings set --resource-group <group_name> --name <app_name> --settings WEBSITES_PORT=80
 ```
