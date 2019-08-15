@@ -2,7 +2,9 @@
 
 A REST API built with .NET Core.
 
-Root URL: [http://qbquestionsapi.azurewebsites.net](http://qbquestionsapi.azurewebsites.net), see [endpoints](#endpoints) for available routes. A bearer token is required.
+Root URL: [http://qbquestionsapi.azurewebsites.net](http://qbquestionsapi.azurewebsites.net)
+
+See [endpoints](#endpoints) for available routes. Note that a bearer token is required.
 
 ## Requirements
 
@@ -31,7 +33,8 @@ Secrets are stored in Azure Key Vault and are retrieved with their key IDs using
 ```
 az login
 ```
-When deployed to Azure, this application needs to be registered in Azure Active Directory to get assigned a managed identity. This identity must be granted permission to access the secrets.
+
+For the deployed application, a system assigned managed identity is obtained for the Azure App Service. This identity is included in the access policies of the Key Vault and is given `Get` access.
 
 ## Endpoints
 
@@ -134,9 +137,16 @@ Sample response: `200 OK`
 
 ## Deployment
 
-This API is containerized with Docker and deployed to Azure App Services. Images are pushed to a private Azure Container Registry where they are used by App Services to create a web app.
+This API is containerized with Docker and deployed to Azure App Services. Images are pushed to a private Azure Container Registry (ACR) where they are used by App Services to create a web app. Continuous deployment is enabled so the App Service is updated whenever a new version of the image is pushed to the registry. You must be authenticated with ACR in order to push (credentials can be found through the CLI or through Azure Portal).
 
-Ensure that outbound IPs of the web app are added to database security settings. Obtain IPs with the Azure CLI:
+```
+docker build -t <my-registry-name>.azurecr.io/qb-questions-api:<version> .
+docker push <my-registry-name>.azurecr.io/qb-questions-api:<version>
+```
+
+Images are tagged with a version and versioning is done manually for now using MAJOR.MINOR.PATCH format. MAJOR is incremented for breaking changes, MINOR for backwards-compatible feature additions, and PATCH for bug fixes.
+
+Ensure that outbound IP addresses of the web app are added to database security settings. Obtain IPs with the Azure CLI:
 ```
 az webapp show --resource-group <group_name> --name <app_name> --query outboundIpAddresses --output tsv
 ```
