@@ -1,12 +1,9 @@
-﻿using System;
-using System.Collections.Generic;
-using System.IO;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore;
+﻿using Microsoft.AspNetCore;
 using Microsoft.AspNetCore.Hosting;
-using Microsoft.Extensions.Configuration;
-using Microsoft.Extensions.Logging;
+using Microsoft.Extensions.DependencyInjection;
+
+using QbQuestionsAPI.Domain.Services;
+using QbQuestionsAPI.Services;
 
 namespace QbQuestionsAPI
 {
@@ -19,6 +16,8 @@ namespace QbQuestionsAPI
 
         public static IWebHostBuilder CreateWebHostBuilder(string[] args) =>
             WebHost.CreateDefaultBuilder(args)
+                .ConfigureServices(serviceCollection =>
+                    serviceCollection.AddScoped<ISecretManagementService, SecretManagementService>())
                 .UseStartup<Startup>();
     }
 }

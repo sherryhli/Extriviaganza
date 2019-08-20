@@ -1,13 +1,9 @@
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.Extensions.Options;
 using Microsoft.IdentityModel.Tokens;
 using System;
 using System.IdentityModel.Tokens.Jwt;
 using System.Security.Claims;
 using System.Text;
-using System.Threading.Tasks;
 
 using QbQuestionsAPI.Domain.Models;
 using QbQuestionsAPI.Domain.Services;
@@ -17,11 +13,16 @@ namespace QbQuestionsAPI.Services
     public class AuthenticateService : IAuthenticateService
     {
         private readonly IUserService _userService;
+        private readonly ISecretManagementService _secretManagementService;
         private readonly TokenPayload _tokenPayload;
 
-        public AuthenticateService(IUserService userService, IOptions<TokenPayload> tokenPayload)
+        public AuthenticateService(
+            IUserService userService,
+            ISecretManagementService secretManagementService,
+            IOptions<TokenPayload> tokenPayload)
         {
             _userService = userService;
+            _secretManagementService = secretManagementService;
             _tokenPayload = tokenPayload.Value;
         }
 
@@ -40,7 +41,7 @@ namespace QbQuestionsAPI.Services
             };
 
             const string issuerSigningKeyId = "https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsIssuerSigningKey";
-            _tokenPayload.Secret = GetKeyVaultSecret(issuerSigningKeyId).Result;
+            _tokenPayload.Secret = _secretManagementService.GetKeyVaultSecret(issuerSigningKeyId).Result;
 
             SymmetricSecurityKey key = new SymmetricSecurityKey(Encoding.ASCII.GetBytes(_tokenPayload.Secret));
             SigningCredentials credentials = new SigningCredentials(key, SecurityAlgorithms.HmacSha256);
@@ -55,15 +56,6 @@ namespace QbQuestionsAPI.Services
 
             token = new JwtSecurityTokenHandler().WriteToken(jwtToken);
             return true;
-        }
-
-        // TODO: Use shared secret management service
-        private async Task<string> GetKeyVaultSecret(string secretId)
-        {
-            AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-            KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            SecretBundle secret = await keyVaultClient.GetSecretAsync(secretId).ConfigureAwait(false);
-            return secret.Value;
         }
     }
 }

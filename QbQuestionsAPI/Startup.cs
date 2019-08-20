@@ -3,16 +3,12 @@ using Microsoft.AspNetCore.Authentication.JwtBearer;
 using Microsoft.AspNetCore.Builder;
 using Microsoft.AspNetCore.Hosting;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.KeyVault;
-using Microsoft.Azure.KeyVault.Models;
-using Microsoft.Azure.Services.AppAuthentication;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Microsoft.Extensions.DependencyInjection;
 using Microsoft.IdentityModel.Tokens;
 using System.Reflection;
 using System.Text;
-using System.Threading.Tasks;
 
 using QbQuestionsAPI.Domain.Models;
 using QbQuestionsAPI.Domain.Repositories;
@@ -26,9 +22,12 @@ namespace QbQuestionsAPI
 {
     public class Startup
     {
-        public Startup(IConfiguration configuration)
+        private readonly ISecretManagementService _secretManagementService;
+
+        public Startup(IConfiguration configuration, ISecretManagementService secretManagementService)
         {
             Configuration = configuration;
+            _secretManagementService = secretManagementService;
         }
 
         public IConfiguration Configuration { get; }
@@ -42,7 +41,7 @@ namespace QbQuestionsAPI
             TokenPayload tokenPayload = Configuration.GetSection("tokenPayload").Get<TokenPayload>();
             // Overwrite dummy secret value in appsettings.json with actual value from Azure Key Vault
             const string issuerSigningKeyId = "https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsIssuerSigningKey";
-            tokenPayload.Secret = GetKeyVaultSecret(issuerSigningKeyId).Result;
+            tokenPayload.Secret = _secretManagementService.GetKeyVaultSecret(issuerSigningKeyId).Result;
 
             services
                 .AddAuthentication(x =>
@@ -67,8 +66,8 @@ namespace QbQuestionsAPI
                 });
 
             // Connect to database
-            const string connectinStringId = "https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsDbConnectionString";
-            string connectionString = GetKeyVaultSecret(connectinStringId).Result;
+            const string connectionStringId = "https://extriviaganza-vault.vault.azure.net/secrets/QbQuestionsDbConnectionString";
+            string connectionString = _secretManagementService.GetKeyVaultSecret(connectionStringId).Result;
             services.AddDbContext<AppDbContext>(options => options.UseSqlServer(connectionString));
 
             // Configure service lifetimes
@@ -100,15 +99,6 @@ namespace QbQuestionsAPI
             app.UseAuthentication();
             app.UseHttpsRedirection();
             app.UseMvc();
-        }
-
-        // TODO: Move this out to a secret management service
-        private async Task<string> GetKeyVaultSecret(string secretId)
-        {
-            AzureServiceTokenProvider azureServiceTokenProvider = new AzureServiceTokenProvider();
-            KeyVaultClient keyVaultClient = new KeyVaultClient(new KeyVaultClient.AuthenticationCallback(azureServiceTokenProvider.KeyVaultTokenCallback));
-            SecretBundle secret = await keyVaultClient.GetSecretAsync(secretId).ConfigureAwait(false);
-            return secret.Value;
         }
     }
 }
