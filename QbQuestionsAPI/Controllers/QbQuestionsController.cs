@@ -34,6 +34,20 @@ namespace QbQuestionsAPI.Controllers
             return resource;
         }
 
+        [HttpGet("random")]
+        public async Task<IActionResult> GetRandomAsync(int? level = null)
+        {
+            QbQuestion question = await _qbQuestionService.GetRandomAsync(level);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
+            QbQuestionResource resource = _mapper.Map<QbQuestion, QbQuestionResource>(question);
+            return Ok(resource);
+        }
+
         [HttpPost]
         public async Task<IActionResult> PostAsync([FromBody] SaveQbQuestionResource[] resources)
         {

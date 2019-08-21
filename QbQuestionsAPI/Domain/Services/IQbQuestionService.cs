@@ -8,6 +8,7 @@ namespace QbQuestionsAPI.Domain.Services
     public interface IQbQuestionService
     {
         Task<QbQuestion> GetAsync(int id);
+        Task<QbQuestion> GetRandomAsync(int? level);
         Task<QbQuestionResponse> SaveAsync(QbQuestion qbQuestion);
         Task<QbQuestionResponse> UpdateAsync(int id, QbQuestion qbQuestion);
         Task<QbQuestionResponse> DeleteAsync(int id);

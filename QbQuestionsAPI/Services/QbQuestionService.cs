@@ -24,6 +24,11 @@ namespace QbQuestionsAPI.Services
             return await _qbQuestionRepository.FindByIdAsync(id);
         }
 
+        public async Task<QbQuestion> GetRandomAsync(int? level)
+        {
+            return await _qbQuestionRepository.GetRandomAsync(level);
+        }
+
         public async Task<QbQuestionResponse> SaveAsync(QbQuestion qbQuestion)
         {
             try

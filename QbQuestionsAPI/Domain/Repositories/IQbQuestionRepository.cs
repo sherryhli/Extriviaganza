@@ -7,6 +7,7 @@ namespace QbQuestionsAPI.Domain.Repositories
     public interface IQbQuestionRepository
     {
         Task<QbQuestion> FindByIdAsync(int id);
+        Task<QbQuestion> GetRandomAsync(int? level);
         Task AddAsync(QbQuestion qbQuestion);
         void Update(QbQuestion qbQuestion);
         void Remove(QbQuestion qbQuestion);
