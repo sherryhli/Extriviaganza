@@ -55,6 +55,25 @@ Sample response: `200 OK`
 }
 ```
 
+### `GET`: `/api/qbquestions/random`
+Sample response: `200 OK`
+```
+ {
+    "id": 25,
+    "level": "High School",
+    "tournament": "PACE NSC",
+    "year": 2019,
+    "power": "A 1958 book on the \"method of theory\" of the \"American\" form of this discipline stated the authors' belief that this discipline is \"anthropology \r\nor it is nothing.\" A 20th-century practitioner of this discipline adapted Robert Merton's idea of \"middle range theories\" to describe an approach to this discipl\r\nine that involved ethnographic fieldwork among hunter-gatherer societies. Lewis Binford pioneered the \"new,\" or",
+    "body": "\"processual,\" form of this discipline. The \"Harris matrix\" is a method of creating seriation diagrams in this discipline that rely on the laws of \"original horizontality,\" \"stratigraphic succession,\" and \"superposition.\" Sites such as GÃ¶bekli Tepe (go-BEK-lee TEH-pay) and Cahokia (kuh-HO-kee-uh) are examined by practitioners of, for 10 points, what academic discipline concerning the excavation of human-built sites?",
+    "answer": "archaeology",
+    "notes": "[accept ethnoarchaeology or processual archaeology or new archaeology or middle-range archaeology; accept forms of the word archaeology such as archae\r\nological study; do not accept or prompt on \"paleontology\" or similar answers]"
+}
+```
+
+Optional query string parameter of `level` with 1 = Middle School, 2 = High School, 3 = Collegiate, 4 = Trash. If not specified, the random question can be of any of these levels.
+
+If no question is retrieved, `404 Not Found` is returned.
+
 ### `POST`: `/api/qbquestions`
 This endpoint accepts bulk requests, the request body must be a JSON array of questions.
 
