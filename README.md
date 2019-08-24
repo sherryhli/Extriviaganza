@@ -8,32 +8,31 @@ Extriviaganza is a project inspired by Protobowl, an online quizbowl game that I
 
 ## Project Details
 
-The project is still in early stages but I envision several different components:
+There are 5 different components to this project, with 3 of them being currently worked on. More detailed documentation can be found in each component's README. The components are kept in a single repo for organization purposes but most are actually deployable units on their own.
 
-### pdfToTxt Script
+### Scripts
 
-Questions are obtained from packets found at [the packet archive](http://quizbowlpackets.com/), which are in `.pdf` formats. The first step is to convert `.pdf` files into `.txt` files using a Python command line tool provided by PDFMiner (`pdf2txt.py`). I have created a simple PowerShell script that calls the PDFMiner tool and organizes output files.
+Questions are obtained from packets found at [the packet archive](http://quizbowlpackets.com/), which are in `.pdf` formats. The first step is to convert `.pdf` files into `.txt` files using a Python command line tool provided by PDFMiner (`pdf2txt.py`). I have created a simple PowerShell script that calls the PDFMiner tool and organizes output files. The other script in the folder is a harness for the console app that parses and loads `.txt` files containing questions into a database.
 
-### QbPackParser Console App
+### [QbPackParser Console App](https://github.com/sherryhli/Extriviaganza/tree/master/QbPackParser)
 
-This C# console app may be better named `QbPackParserAndDbLoader`, as the intention is to parse quizbowl questions into JSON objects like the one below, which represents a single question. The questions will then be loaded into a SQL database using a simple REST API that accepts bulk `POST` requests. A PowerShell script will call this console app and use it to parse and load a single `.txt` file or a directory of files.
+This C# console app may soon be renamed to `QbPackParserAndDbLoader`, as it functions to parse quizbowl questions into JSON objects like the one below (which represents a single question) and load them into a SQL database using a simple REST API that accepts bulk `POST` requests. As mentioned above, a PowerShell script calls this console app and uses it to parse and load a single `.txt` file or a directory of files.
 
 ```
 {
-    "id": 1,
-    "level": "",
-    "tournament": "",
+    "level": "string",
+    "tournament": "string",
     "year": 2019,
-    "power": "",
-    "body": "",
-    "answer": "",
-    "notes": ""
+    "power": "string",
+    "body": "string",
+    "answer": "string",
+    "notes": "string"
 }
 ```
 
-### QbQuestions REST API
+### [QbQuestions REST API](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI)
 
-This will be a simple .NET Core web API supporting CRUD operations that interacts with a database storing all quizbowl questions to be used in the game. Entity Framework Core will be used as the ORM to map models to the database schema. The main purpose of this API is to add questions to the database and to provide questions to the game backend.
+This is a .NET Core REST API supporting CRUD operations that interacts with a SQL Server database storing all quizbowl questions to be used in the game. Entity Framework Core is used as the ORM to map models to the database schema. The main purpose of this API is to add questions to the database and to provide questions to the game backend. This API is containerized with Docker and is currently deployed to Azure App Services.
 
 ### Game Backend
 
