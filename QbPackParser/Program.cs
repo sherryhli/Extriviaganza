@@ -1,6 +1,7 @@
 ﻿using System;
 using System.IO;
 using System.Text;
+using QbPackParser.APIClient;
 
 using QbPackParser.Parsers;
 
@@ -42,6 +43,9 @@ namespace QbPackParser
 
             string result = parser.Parse();
             Console.WriteLine(result);
+
+            QbQuestionsClient client = new QbQuestionsClient();
+            client.AddQuestionsToDbAsync(result).Wait();
         }
     }
 }

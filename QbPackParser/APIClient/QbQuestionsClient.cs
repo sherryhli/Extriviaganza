@@ -6,12 +6,12 @@ namespace QbPackParser.APIClient
 {
     public class QbQuestionsClient : HttpClient
     {
-        private readonly string url = "API URL";
+        private readonly string baseUrl = "http://qbquestionsapi.azurewebsites.net/";
 
         /// <summary>Creates a new instance of QbQuestionsClient</summary>
         public QbQuestionsClient() : base()
         {
-            
+            BaseAddress = new System.Uri(baseUrl);
         }
 
         /// <summary>Adds questions to the database via a REST API call</summary>
@@ -19,7 +19,7 @@ namespace QbPackParser.APIClient
         public async Task<HttpResponseMessage> AddQuestionsToDbAsync(string content)
         {
             StringContent stringContent = new StringContent(content, Encoding.UTF8, "application/json");
-            return await PostAsync(url, stringContent);
+            return await PostAsync("qbquestions", stringContent);
         }
     }
 }
