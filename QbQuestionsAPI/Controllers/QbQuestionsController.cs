@@ -26,12 +26,18 @@ namespace QbQuestionsAPI.Controllers
         }
 
         [HttpGet("{id}")]
-        public async Task<QbQuestionResource> GetAsync(int id)
+        public async Task<IActionResult> GetAsync(int id)
         {
             QbQuestion question = await _qbQuestionService.GetAsync(id);
+
+            if (question == null)
+            {
+                return NotFound();
+            }
+
             QbQuestionResource resource = _mapper.Map<QbQuestion, QbQuestionResource>(question);
 
-            return resource;
+            return Ok(resource);
         }
 
         [HttpGet("random")]
