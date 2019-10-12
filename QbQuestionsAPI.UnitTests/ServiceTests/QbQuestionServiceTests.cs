@@ -73,6 +73,25 @@ namespace QbQuestionsAPI.UnitTests.ServiceTests
         }
 
         [Fact]
+        public void UpdateAsyncSuccessTest()
+        {
+            // Arrange
+            IQbQuestionRepository repository = Substitute.For<IQbQuestionRepository>();
+            IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+            QbQuestion question = new QbQuestion();
+            repository.FindByIdAsync(Arg.Any<int>()).Returns(question);
+            repository.Update(Arg.Any<QbQuestion>()).Returns(true);
+            unitOfWork.CompleteAsync().Returns(Task.CompletedTask);
+            QbQuestionService service = new QbQuestionService(repository, unitOfWork);
+
+            // Act
+            Task<QbQuestionResponse> result = service.UpdateAsync(1, question);
+
+            // Assert
+            result.Result.Success.Should().Be(true);
+        }
+
+        [Fact]
         public void UpdateAsyncFailureOnFindTest()
         {
             // Arrange
@@ -107,6 +126,27 @@ namespace QbQuestionsAPI.UnitTests.ServiceTests
 
             // Assert
             string errorMessage = "An error occurred when updating the question: Exception occurred on Update";
+            result.Result.Success.Should().Be(false);
+            result.Result.Message.Should().Be(errorMessage);
+        }
+
+        [Fact]
+        public void UpdateAsyncFailureOnSaveTest()
+        {
+            // Arrange
+            IQbQuestionRepository repository = Substitute.For<IQbQuestionRepository>();
+            IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
+            QbQuestion question = new QbQuestion();
+            repository.FindByIdAsync(Arg.Any<int>()).Returns(question);
+            repository.Update(Arg.Any<QbQuestion>()).Returns(true);
+            unitOfWork.CompleteAsync().Throws(new Exception("Exception occurred on CompleteAsync"));
+            QbQuestionService service = new QbQuestionService(repository, unitOfWork);
+
+            // Act
+            Task<QbQuestionResponse> result = service.UpdateAsync(1, question);
+
+            // Assert
+            string errorMessage = "An error occurred when updating the question: Exception occurred on CompleteAsync";
             result.Result.Success.Should().Be(false);
             result.Result.Message.Should().Be(errorMessage);
         }
