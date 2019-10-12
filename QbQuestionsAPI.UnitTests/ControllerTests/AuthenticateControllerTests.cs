@@ -2,14 +2,11 @@ using AutoMapper;
 using FluentAssertions;
 using Microsoft.AspNetCore.Mvc;
 using NSubstitute;
-using System.Collections.Generic;
-using System.Threading.Tasks;
 using Xunit;
 
 using QbQuestionsAPI.Controllers;
 using QbQuestionsAPI.Domain.Models;
 using QbQuestionsAPI.Domain.Services;
-using QbQuestionsAPI.Domain.Services.Communication;
 using QbQuestionsAPI.Resources;
 
 namespace QbQuestionsAPI.UnitTests.ControllerTests
