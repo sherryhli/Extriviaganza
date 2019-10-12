@@ -9,7 +9,7 @@ namespace QbQuestionsAPI.Domain.Repositories
         Task<QbQuestion> FindByIdAsync(int id);
         Task<QbQuestion> GetRandomAsync(int? level);
         Task AddAsync(QbQuestion qbQuestion);
-        void Update(QbQuestion qbQuestion);
+        bool Update(QbQuestion qbQuestion);
         void Remove(QbQuestion qbQuestion);
     }
 }

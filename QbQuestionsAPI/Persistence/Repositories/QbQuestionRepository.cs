@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -39,9 +40,16 @@ namespace QbQuestionsAPI.Persistence.Repositories
             await _context.QbQuestions.AddAsync(qbQuestion);
         }
 
-        public void Update(QbQuestion qbQuestion)
+        public bool Update(QbQuestion qbQuestion)
         {
-            _context.QbQuestions.Update(qbQuestion);
+            try 
+            {
+                _context.QbQuestions.Update(qbQuestion);
+                return true;
+            }
+            catch (Exception ex) {
+                throw ex;
+            }
         }
 
         public void Remove(QbQuestion qbQuestion)

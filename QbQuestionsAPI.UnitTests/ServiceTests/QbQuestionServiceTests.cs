@@ -99,9 +99,7 @@ namespace QbQuestionsAPI.UnitTests.ServiceTests
             IUnitOfWork unitOfWork = Substitute.For<IUnitOfWork>();
             QbQuestion question = new QbQuestion();
             repository.FindByIdAsync(Arg.Any<int>()).Returns(question);
-            repository
-                .When(r => r.Update(Arg.Any<QbQuestion>()))
-                .Do(x => throw new Exception("Exception occurred on Update"));
+            repository.Update(Arg.Any<QbQuestion>()).Throws(new Exception("Exception occurred on Update"));
             QbQuestionService service = new QbQuestionService(repository, unitOfWork);
 
             // Act
