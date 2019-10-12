@@ -12,7 +12,7 @@ using QbQuestionsAPI.Domain.Services;
 using QbQuestionsAPI.Domain.Services.Communication;
 using QbQuestionsAPI.Resources;
 
-namespace QbQuestionsAPI.UnitTests
+namespace QbQuestionsAPI.UnitTests.ControllerTests
 {
     public class QbQuestionsControllerTests
     {
