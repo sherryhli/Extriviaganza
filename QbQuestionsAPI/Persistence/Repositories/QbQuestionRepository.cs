@@ -24,6 +24,7 @@ namespace QbQuestionsAPI.Persistence.Repositories
 
         public async Task<QbQuestion> GetRandomAsync(int? level)
         {
+            #pragma warning disable EF1000
             string whereClause = level == null ? string.Empty : $"WHERE Level = {level}";
             // TODO: Consider using SQL parameter for whereClause
             var result = await _context.QbQuestions
