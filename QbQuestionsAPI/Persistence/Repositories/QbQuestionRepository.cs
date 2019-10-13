@@ -47,14 +47,23 @@ namespace QbQuestionsAPI.Persistence.Repositories
                 _context.QbQuestions.Update(qbQuestion);
                 return true;
             }
-            catch (Exception ex) {
+            catch (Exception ex)
+            {
                 throw ex;
             }
         }
 
-        public void Remove(QbQuestion qbQuestion)
+        public bool Remove(QbQuestion qbQuestion)
         {
-            _context.QbQuestions.Remove(qbQuestion);
+            try 
+            {
+                _context.QbQuestions.Remove(qbQuestion);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }

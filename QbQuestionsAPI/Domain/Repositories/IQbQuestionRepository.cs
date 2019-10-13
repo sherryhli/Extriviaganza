@@ -10,6 +10,6 @@ namespace QbQuestionsAPI.Domain.Repositories
         Task<QbQuestion> GetRandomAsync(int? level);
         Task AddAsync(QbQuestion qbQuestion);
         bool Update(QbQuestion qbQuestion);
-        void Remove(QbQuestion qbQuestion);
+        bool Remove(QbQuestion qbQuestion);
     }
 }
