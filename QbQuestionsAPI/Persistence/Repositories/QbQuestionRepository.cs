@@ -1,4 +1,5 @@
 using Microsoft.EntityFrameworkCore;
+using System;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -24,6 +25,7 @@ namespace QbQuestionsAPI.Persistence.Repositories
 
         public async Task<QbQuestion> GetRandomAsync(int? level)
         {
+            #pragma warning disable EF1000
             string whereClause = level == null ? string.Empty : $"WHERE Level = {level}";
             // TODO: Consider using SQL parameter for whereClause
             var result = await _context.QbQuestions
@@ -38,14 +40,30 @@ namespace QbQuestionsAPI.Persistence.Repositories
             await _context.QbQuestions.AddAsync(qbQuestion);
         }
 
-        public void Update(QbQuestion qbQuestion)
+        public bool Update(QbQuestion qbQuestion)
         {
-            _context.QbQuestions.Update(qbQuestion);
+            try 
+            {
+                _context.QbQuestions.Update(qbQuestion);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
 
-        public void Remove(QbQuestion qbQuestion)
+        public bool Remove(QbQuestion qbQuestion)
         {
-            _context.QbQuestions.Remove(qbQuestion);
+            try 
+            {
+                _context.QbQuestions.Remove(qbQuestion);
+                return true;
+            }
+            catch (Exception ex)
+            {
+                throw ex;
+            }
         }
     }
 }
