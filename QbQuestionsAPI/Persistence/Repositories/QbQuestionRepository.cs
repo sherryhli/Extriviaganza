@@ -26,10 +26,15 @@ namespace QbQuestionsAPI.Persistence.Repositories
         public async Task<QbQuestion> GetRandomAsync(int? level)
         {
             #pragma warning disable EF1000
-            string whereClause = level == null ? string.Empty : $"WHERE Level = {level}";
+            string levelCondition = level == null ? string.Empty : $"AND Level = {level}";
             // TODO: Consider using SQL parameter for whereClause
+            // var result = await _context.QbQuestions
+            //     .FromSql<QbQuestion>((string)$"SELECT TOP 1 * from QbQuestions {whereClause} ORDER BY NEWID()")
+            //     .ToListAsync();
             var result = await _context.QbQuestions
-                .FromSql<QbQuestion>((string)$"SELECT TOP 1 * from QbQuestions {whereClause} ORDER BY NEWID()")
+                .FromSql<QbQuestion>(
+                    (string)$"SELECT TOP 1 * FROM QbQuestions WHERE Id >= (ABS(CHECKSUM(NEWID())) % (SELECT MAX(Id) FROM QbQuestions)) {levelCondition};"
+                )
                 .ToListAsync();
 
             return result.FirstOrDefault();
