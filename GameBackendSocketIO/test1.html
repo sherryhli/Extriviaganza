@@ -1,0 +1,34 @@
+<!doctype html>
+<html>
+
+<head>
+    <title>Extriviaganza</title>
+</head>
+
+<script src="/socket.io/socket.io.js"></script>
+<script src="https://code.jquery.com/jquery-1.11.1.js"></script>
+<script>
+    $(function () {
+        var socket = io();
+        socket.emit('join game', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1');
+        setTimeout(function () {
+            socket.emit('get question', '25e38b6a-5842-4fc2-bd09-98648d345d0c', null)
+        }, 2000);
+
+        socket.on('player joined', function (state) {
+            console.log(state);
+        });
+
+        socket.on('duplicate userId', function (userId) {
+            console.log(`UserId = ${userId} is already in use`);
+        });
+
+        socket.on('receive question', function (question) {
+            console.log(question);
+        });
+    });
+</script>
+
+<body></body>
+
+</html>

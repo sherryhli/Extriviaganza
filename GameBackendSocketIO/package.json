@@ -1,0 +1,15 @@
+{
+  "name": "extriviaganza-game-backend",
+  "version": "1.0.0",
+  "main": "index.js",
+  "scripts": {
+    "dev": "nodemon --watch server.js server.js"
+  },
+  "dependencies": {
+    "axios": "^0.19.2",
+    "express": "^4.17.1",
+    "mongodb": "^3.5.5",
+    "nodemon": "^2.0.2",
+    "socket.io": "^2.3.0"
+  }
+}
