@@ -174,18 +174,23 @@ io.on('connection', socket => {
             } else {
                 if (result) {
                     const remainingPlayers = result.players.filter(p => p.socketId !== socket.id);
-                    collection.findOneAndUpdate(
-                        { "gameId": socket.gameId },
-                        { $set: { "players": remainingPlayers } },
-                        { returnOriginal: false },
-                        (error, result) => {
-                            if (error) {
-                                console.log('Player not removed from game in MongoDB');
-                            } else {
-                                io.sockets.in(socket.gameId).emit('player joined', result.value);
+                    if (remainingPlayers.length === 0) {
+                        // remove the game from MongoDB if all players have left
+                        collection.deleteOne({ "gameId": socket.gameId });
+                    } else {
+                        collection.findOneAndUpdate(
+                            { "gameId": socket.gameId },
+                            { $set: { "players": remainingPlayers } },
+                            { returnOriginal: false },
+                            (error, result) => {
+                                if (error) {
+                                    console.log('Player not removed from game in MongoDB');
+                                } else {
+                                    io.sockets.in(socket.gameId).emit('player joined', result.value);
+                                }
                             }
-                        }
-                    );
+                        );
+                    }
                 } else {
                     console.log('Player not removed from game in MongoDB');
                 }
