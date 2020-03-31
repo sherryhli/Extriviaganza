@@ -1,4 +1,3 @@
-
 if (process.env.NODE_ENV !== 'production') {
     require('dotenv').config();
 }
@@ -171,16 +170,24 @@ io.on('connection', function (socket) {
         console.log('user disconnected');
         collection.findOne({ "gameId": socket.gameId }, (error, result) => {
             if (error) {
-                // TODO
+                console.log('Player not removed from game in MongoDB');
             } else {
                 if (result) {
                     const remainingPlayers = result.players.filter(p => p.socketId !== socket.id);
-                    collection.updateOne(
+                    collection.findOneAndUpdate(
                         { "gameId": socket.gameId },
-                        { $set: { "players": remainingPlayers } }
+                        { $set: { "players": remainingPlayers } },
+                        { returnOriginal: false },
+                        function (error, result) {
+                            if (error) {
+                                console.log('Player not removed from game in MongoDB');
+                            } else {
+                                io.sockets.in(socket.gameId).emit('player joined', result.value);
+                            }
+                        }
                     );
                 } else {
-                    // TODO
+                    console.log('Player not removed from game in MongoDB');
                 }
             }
         });
