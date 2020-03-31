@@ -1,13 +1,15 @@
 
+if (process.env.NODE_ENV !== 'production') {
+    require('dotenv').config();
+}
+
 const app = require('express')();
 const http = require('http').createServer(app);
 const io = require('socket.io')(http);
 const mongoClient = require("mongodb").MongoClient;
 const axios = require('axios');
 
-// TODO: use env variables instead
-const SECRETS = require('./secrets');
-const CONNECTION_STRING = SECRETS.MONGO_CONNECTION_STRING;
+const PORT = process.env.PORT || 3000;
 
 
 // For testing purposes only, will be creating a client in separate repo
@@ -22,15 +24,15 @@ app.get('/test2', function (req, res) {
 
 var database, collection;
 
-http.listen(3000, function () {
-    console.log('Listening on *:3000');
-    mongoClient.connect(CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
+http.listen(PORT, function () {
+    console.log(`Listening on *:${PORT}`);
+    mongoClient.connect(process.env.MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if (error) {
             throw error;
         }
-        database = client.db(SECRETS.MONGO_DB_NAME);
-        collection = database.collection(SECRETS.MONGO_COLLECTION_NAME);
-        console.log(`Connected to database`);
+        database = client.db(process.env.MONGO_DB_NAME);
+        collection = database.collection(process.env.MONGO_COLLECTION_NAME);
+        console.log('Connected to database');
     });
 });
 
@@ -80,8 +82,8 @@ io.on('connection', function (socket) {
 
                     // fetch auth token and save to DB
                     axios.post('http://qbquestionsapi.azurewebsites.net/api/authenticate', {
-                        "username": SECRETS.QBQUESTIONS_API_USERNAME,
-                        "password": SECRETS.QBQUESTIONS_API_PASSWORD
+                        "username": process.env.QBQUESTIONS_API_USERNAME,
+                        "password": process.env.QBQUESTIONS_API_PASSWORD
                     }).then(response => {
                         console.log(response.data);
 

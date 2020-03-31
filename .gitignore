@@ -351,5 +351,5 @@ MigrationBackup/
 # Node modules
 *node_modules/
 
-# Game client secrets
-*secrets.js
+# Game backend env file
+*.env
