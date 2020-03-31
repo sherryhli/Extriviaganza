@@ -26,6 +26,14 @@
         socket.on('receive question', function (question) {
             console.log(question);
         });
+
+        socket.on('fatal error', function () {
+            console.log('Received fatal error');
+        });
+
+        socket.on('retryable error', function () {
+            console.log('Received retryable error');
+        });
     });
 </script>
 

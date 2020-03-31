@@ -10,6 +10,7 @@ const mongoClient = require("mongodb").MongoClient;
 const axios = require('axios');
 
 const PORT = process.env.PORT || 3000;
+const DEFAULT_NAMESPACE = '/';
 
 
 // For testing purposes only, will be creating a client in separate repo
@@ -28,6 +29,7 @@ http.listen(PORT, function () {
     console.log(`Listening on *:${PORT}`);
     mongoClient.connect(process.env.MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if (error) {
+            console.log(`Could not connect to database, error = ${error.message} and ${error.errmsg}`);
             throw error;
         }
         database = client.db(process.env.MONGO_DB_NAME);
@@ -37,18 +39,25 @@ http.listen(PORT, function () {
 });
 
 
+function getSocketsInGame(gameId) {
+    return Object.values(io.of(DEFAULT_NAMESPACE).connected).filter(s => s.gameId === gameId);
+}
+
+
 io.on('connection', function (socket) {
     console.log(`A user connected, socketId = ${socket.id}`);
 
     socket.on('join game', function (gameId, userId) {
         socket.join(gameId);
+        // adding gameId as a custom property to socket
         socket.gameId = gameId;
 
         collection.findOne({ "gameId": gameId }, (error, result) => {
             if (error) {
-                // TODO: emit error event to frontend
-                socket.leave(gameId);
-                throw error;
+                socket.emit('fatal error');
+                socket.leave(gameId, () => {
+                    socket.disconnect(true);
+                });
             } else {
                 if (result) {
                     if (result.players.filter(p => p.userId === userId).length !== 0) {
@@ -71,7 +80,10 @@ io.on('connection', function (socket) {
                         { returnOriginal: false },
                         function (error, result) {
                             if (error) {
-                                // TODO: emit error event to frontend
+                                socket.emit('fatal error');
+                                socket.leave(gameId, () => {
+                                    socket.disconnect(true);
+                                });
                             } else {
                                 io.sockets.in(gameId).emit('player joined', result.value);
                             }
@@ -101,14 +113,20 @@ io.on('connection', function (socket) {
                         };
                         collection.insertOne(game, function (error, result) {
                             if (error) {
-                                console.log('Error inserting user into new game');
+                                socket.emit('fatal error');
+                                socket.leave(gameId, () => {
+                                    socket.disconnect(true);
+                                });
                             } else {
                                 io.sockets.in(gameId).emit('player joined', result.ops[0]);
                             }
                         });
                     }).catch(error => {
-                        // TODO: emit error event to frontend
-                        throw error;
+                        // unable to fetch auth token
+                        socket.emit('fatal error');
+                        socket.leave(gameId, () => {
+                            socket.disconnect(true);
+                        });
                     });
                 }
             }
@@ -122,7 +140,7 @@ io.on('connection', function (socket) {
 
         collection.findOne({ "gameId": gameId }, (error, result) => {
             if (error) {
-                // TODO: emit error event to frontend
+                io.sockets.in(gameId).emit('retryable error');
             } else {
                 if (result) {
                     const auth = `Bearer ${result.token}`;
@@ -130,12 +148,19 @@ io.on('connection', function (socket) {
                         .then(response => {
                             io.sockets.in(gameId).emit('receive question', response.data);
                         }).catch(error => {
-                            // TODO: emit error event to frontend
                             console.log('Error retrieving question');
                             console.log(error);
+                            io.sockets.in(gameId).emit('retryable error');
                         });
                 } else {
-                    // TODO: emit error event to frontend
+                    console.log(`${gameId} is not found in the DB`);
+                    io.sockets.in(gameId).emit('fatal error');
+                    const socketsInGame = getSocketsInGame(gameId);
+                    socketsInGame.forEach(s => {
+                        s.leave(gameId, () => {
+                            s.disconnect(true);
+                        })
+                    });
                 }
             }
         });
