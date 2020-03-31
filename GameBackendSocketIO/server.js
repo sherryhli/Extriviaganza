@@ -13,18 +13,18 @@ const DEFAULT_NAMESPACE = '/';
 
 
 // For testing purposes only, will be creating a client in separate repo
-app.get('/test1', function (req, res) {
+app.get('/test1', (req, res) => {
     res.sendFile(__dirname + '/test1.html');
 });
 
-app.get('/test2', function (req, res) {
+app.get('/test2', (req, res) => {
     res.sendFile(__dirname + '/test2.html');
 });
 
 
 var database, collection;
 
-http.listen(PORT, function () {
+http.listen(PORT, () => {
     console.log(`Listening on *:${PORT}`);
     mongoClient.connect(process.env.MONGO_CONNECTION_STRING, { useNewUrlParser: true, useUnifiedTopology: true }, (error, client) => {
         if (error) {
@@ -43,10 +43,10 @@ function getSocketsInGame(gameId) {
 }
 
 
-io.on('connection', function (socket) {
+io.on('connection', socket => {
     console.log(`A user connected, socketId = ${socket.id}`);
 
-    socket.on('join game', function (gameId, userId) {
+    socket.on('join game', (gameId, userId) => {
         socket.join(gameId);
         // adding gameId as a custom property to socket
         socket.gameId = gameId;
@@ -77,7 +77,7 @@ io.on('connection', function (socket) {
                         { "gameId": gameId },
                         { $set: { "players": result.players } },
                         { returnOriginal: false },
-                        function (error, result) {
+                        (error, result) => {
                             if (error) {
                                 socket.emit('fatal error');
                                 socket.leave(gameId, () => {
@@ -110,7 +110,7 @@ io.on('connection', function (socket) {
                                 }
                             ]
                         };
-                        collection.insertOne(game, function (error, result) {
+                        collection.insertOne(game, (error, result) => {
                             if (error) {
                                 socket.emit('fatal error');
                                 socket.leave(gameId, () => {
@@ -133,7 +133,7 @@ io.on('connection', function (socket) {
     });
 
 
-    socket.on('get question', function (gameId, level) {
+    socket.on('get question', (gameId, level) => {
         const levelQueryParam = level ? `?level=${level}` : '';
         const url = `http://qbquestionsapi.azurewebsites.net/api/qbquestions/random${levelQueryParam}`;
 
@@ -166,7 +166,7 @@ io.on('connection', function (socket) {
     });
 
 
-    socket.on('disconnect', function () {
+    socket.on('disconnect', ()  => {
         console.log('user disconnected');
         collection.findOne({ "gameId": socket.gameId }, (error, result) => {
             if (error) {
@@ -178,7 +178,7 @@ io.on('connection', function (socket) {
                         { "gameId": socket.gameId },
                         { $set: { "players": remainingPlayers } },
                         { returnOriginal: false },
-                        function (error, result) {
+                        (error, result) => {
                             if (error) {
                                 console.log('Player not removed from game in MongoDB');
                             } else {
