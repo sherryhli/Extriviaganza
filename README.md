@@ -8,7 +8,11 @@ Extriviaganza is a project inspired by Protobowl, an online quizbowl game that I
 
 ## Project Details
 
-There are 5 different components to this project, with 3 of them being currently worked on. More detailed documentation can be found in each component's README. The components are kept in a single repo for organization purposes but most are actually deployable units on their own.
+There are 5 different components to this project, with 4 already being worked on. More detailed documentation can be found in each component's README. The components are kept in a single repo for organization purposes but most are actually deployable units on their own.
+
+Architecture diagram, updated April 1, 2020:
+
+![Architecture-Diagram](architecture_diagram.png)
 
 ### Scripts
 
@@ -36,10 +40,10 @@ This is a .NET Core REST API supporting CRUD operations that interacts with a SQ
 
 ### Game Backend
 
-The game backend will likely be created using SignalR or WebSockets, which will allow multiple players to interact in real-time when playing the game. If using SignalR, then this component will also be built with .NET Core. WebSockets will allow some other language/framework choices.
+The game backend is an Express.js server that makes use of socket.io, which allows players to interact in real-time when playing the game. socket.io supports the concept of rooms, which is great because it makes it easy to enable isolation between games. MongoDB is used to store game states.
 
 ### Game Frontend
 
-The frontend will likely be done using Angular or React.
+The frontend will likely be done with React.
 
 Updates to this README will be made as I work out more details to this project.
