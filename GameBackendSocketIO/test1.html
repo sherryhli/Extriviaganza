@@ -14,6 +14,12 @@
         setTimeout(function () {
             socket.emit('get question', '25e38b6a-5842-4fc2-bd09-98648d345d0c', null)
         }, 2000);
+        setTimeout(function () {
+            socket.emit('buzz', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1')
+        }, 3000);
+        setTimeout(function () {
+            socket.emit('correct answer', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1', false)
+        }, 10000);
 
         socket.on('player joined', function (state) {
             console.log(state);
@@ -33,6 +39,18 @@
 
         socket.on('retryable error', function () {
             console.log('Received retryable error');
+        });
+
+        socket.on('buzz acknowledged', function () {
+            console.log('You have buzzed');
+        });
+
+        socket.on('other player buzzed', function (message) {
+            console.log(message);
+        });
+
+        socket.on('player answered correctly', function (state) {
+            console.log(state);
         });
     });
 </script>

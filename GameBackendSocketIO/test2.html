@@ -34,6 +34,18 @@
         socket.on('retryable error', function () {
             console.log('Received retryable error');
         });
+
+        socket.on('buzz acknowledged', function () {
+            console.log('You have buzzed');
+        });
+
+        socket.on('other player buzzed', function (message) {
+            console.log(message);
+        });
+
+        socket.on('player answered correctly', function (state) {
+            console.log(state);
+        });
     });
 </script>
 

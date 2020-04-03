@@ -166,6 +166,51 @@ io.on('connection', socket => {
     });
 
 
+    socket.on('buzz', (gameId, userId) => {
+        socket.emit('buzz acknowledged');
+        socket.broadcast.to(gameId).emit('other player buzzed', `${userId} buzzed`);
+    });
+
+
+    socket.on('correct answer', (gameId, userId, power) => {
+        collection.findOne({ "gameId": gameId }, (error, result) => {
+            if (error) {
+                io.sockets.in(gameId).emit('retryable error');
+            } else {
+                if (result) {
+                    result.players.forEach(p => {
+                        if (p.userId === userId) {
+                            p.score += power ? 15 : 10;
+                        }
+                    }, result.players);
+
+                    collection.findOneAndUpdate(
+                        { "gameId": gameId },
+                        { $set: { "players": result.players } },
+                        { returnOriginal: false },
+                        (error, result) => {
+                            if (error) {
+                                io.sockets.in(gameId).emit('retryable error');
+                            } else {
+                                io.sockets.in(socket.gameId).emit('player answered correctly', result.value);
+                            }
+                        }
+                    );
+                } else {
+                    console.log(`${gameId} is not found in the DB`);
+                    io.sockets.in(gameId).emit('fatal error');
+                    const socketsInGame = getSocketsInGame(gameId);
+                    socketsInGame.forEach(s => {
+                        s.leave(gameId, () => {
+                            s.disconnect(true);
+                        })
+                    });
+                }
+            }
+        });
+    });
+
+
     socket.on('disconnect', ()  => {
         console.log('user disconnected');
         collection.findOne({ "gameId": socket.gameId }, (error, result) => {
