@@ -71,11 +71,10 @@ io.on('connection', socket => {
                         "score": 0,
                         "socketId": socket.id
                     }
-                    result.players.push(newPlayer);
 
                     collection.findOneAndUpdate(
                         { "gameId": gameId },
-                        { $set: { "players": result.players } },
+                        { $push: { "players": newPlayer } },
                         { returnOriginal: false },
                         (error, result) => {
                             if (error) {
@@ -173,41 +172,20 @@ io.on('connection', socket => {
 
 
     socket.on('correct answer', (gameId, userId, power) => {
-        collection.findOne({ "gameId": gameId }, (error, result) => {
-            if (error) {
-                io.sockets.in(gameId).emit('retryable error');
-            } else {
-                if (result) {
-                    result.players.forEach(p => {
-                        if (p.userId === userId) {
-                            p.score += power ? 15 : 10;
-                        }
-                    }, result.players);
+        const points = power ? 15 : 10;
 
-                    collection.findOneAndUpdate(
-                        { "gameId": gameId },
-                        { $set: { "players": result.players } },
-                        { returnOriginal: false },
-                        (error, result) => {
-                            if (error) {
-                                io.sockets.in(gameId).emit('retryable error');
-                            } else {
-                                io.sockets.in(socket.gameId).emit('player answered correctly', result.value);
-                            }
-                        }
-                    );
+        collection.findOneAndUpdate(
+            { "gameId": gameId, "players.userId": userId },
+            { $inc: { "players.$.score": points } },
+            { returnOriginal: false },
+            (error, result) => {
+                if (error) {
+                    io.sockets.in(gameId).emit('retryable error');
                 } else {
-                    console.log(`${gameId} is not found in the DB`);
-                    io.sockets.in(gameId).emit('fatal error');
-                    const socketsInGame = getSocketsInGame(gameId);
-                    socketsInGame.forEach(s => {
-                        s.leave(gameId, () => {
-                            s.disconnect(true);
-                        })
-                    });
+                    io.sockets.in(socket.gameId).emit('player answered correctly', result.value);
                 }
             }
-        });
+        );
     });
 
 
@@ -225,7 +203,7 @@ io.on('connection', socket => {
                     } else {
                         collection.findOneAndUpdate(
                             { "gameId": socket.gameId },
-                            { $set: { "players": remainingPlayers } },
+                            { $pull: { "players": { "socketId": socket.id } } },
                             { returnOriginal: false },
                             (error, result) => {
                                 if (error) {
