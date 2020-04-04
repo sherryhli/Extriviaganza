@@ -133,6 +133,8 @@ io.on('connection', socket => {
 
 
     socket.on('get question', (gameId, level) => {
+        io.sockets.in(gameId).emit('re-enable buzz');
+
         const levelQueryParam = level ? `?level=${level}` : '';
         const url = `http://qbquestionsapi.azurewebsites.net/api/qbquestions/random${levelQueryParam}`;
 
@@ -186,6 +188,28 @@ io.on('connection', socket => {
                 }
             }
         );
+    });
+
+
+    socket.on('incorrect answer', (gameId, userId, answer, power) => {
+        if (!power) {
+            // sending null as last argument since game state does not need to be updated
+            io.sockets.in(gameId).emit('player answered incorrectly', userId, answer, null);
+        } else {
+            // incorrect answer on power is an "interrupt" and there's a 5 point penalty
+            collection.findOneAndUpdate(
+                { "gameId": gameId, "players.userId": userId },
+                { $inc: { "players.$.score": -5 } },
+                { returnOriginal: false },
+                (error, result) => {
+                    if (error) {
+                        io.sockets.in(gameId).emit('retryable error');
+                    } else {
+                        io.sockets.in(gameId).emit('player answered incorrectly', userId, answer, result.value);
+                    }
+                }
+            );
+        }
     });
 
 

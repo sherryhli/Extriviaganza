@@ -46,6 +46,14 @@
         socket.on('player answered correctly', function (state) {
             console.log(state);
         });
+
+        socket.on('player answered incorrectly', function (userId, answer, state) {
+            console.log(`${userId} incorrectly answered: ${answer}`);
+        });
+
+        socket.on('re-enable buzz', function () {
+            console.log('Buzz re-enabled');
+        });
     });
 </script>
 
