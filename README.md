@@ -38,7 +38,7 @@ This C# console app may soon be renamed to `QbPackParserAndDbLoader`, as it func
 
 This is a .NET Core REST API supporting CRUD operations that interacts with a SQL Server database storing all quizbowl questions to be used in the game. Entity Framework Core is used as the ORM to map models to the database schema. The main purpose of this API is to add questions to the database and to provide questions to the game backend. This API is containerized with Docker and is currently deployed to Azure App Services.
 
-### Game Backend
+### [Game Backend](https://github.com/sherryhli/Extriviaganza/tree/master/GameBackendSocketIO)
 
 The game backend is an Express.js server that makes use of socket.io, which allows players to interact in real-time when playing the game. socket.io supports the concept of rooms, which is great because it makes it easy to enable isolation between games. MongoDB is used to store game states.
 
