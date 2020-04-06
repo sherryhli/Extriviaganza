@@ -67,6 +67,21 @@ namespace QbQuestionsAPI.UnitTests.ControllerTests
         }
 
         [Fact]
+        public async Task GetRandomAsyncBadRequestFailureTest()
+        {
+            // Arrange
+            const string invalidLevel = "invalid";
+            IQbQuestionService qbQuestionService = Substitute.For<IQbQuestionService>();
+            QbQuestionsController controller = new QbQuestionsController(qbQuestionService, mapper);
+
+            // Act
+            IActionResult result = await controller.GetRandomAsync(invalidLevel);
+
+            // Assert
+            result.Should().BeOfType<BadRequestResult>();
+        }
+
+        [Fact]
         public async Task GetRandomAsyncFailureTest()
         {
             // Arrange

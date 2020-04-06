@@ -1,6 +1,7 @@
 using AutoMapper;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using System;
 using System.Collections.Generic;
 using System.Threading.Tasks;
 
@@ -41,9 +42,25 @@ namespace QbQuestionsAPI.Controllers
         }
 
         [HttpGet("random")]
-        public async Task<IActionResult> GetRandomAsync(int? level = null)
+        public async Task<IActionResult> GetRandomAsync(string level = null)
         {
-            QbQuestion question = await _qbQuestionService.GetRandomAsync(level);
+            int? levelInt = null;
+
+            if (!String.IsNullOrEmpty(level))
+            {
+                Enum.TryParse(level, true, out ETournamentLevel levelEnum);
+                // 0 is default enum value, which is returned if TryParse fails
+                if (levelEnum != 0)
+                {
+                    levelInt = (int?)levelEnum;
+                }
+                else
+                {
+                    return BadRequest();
+                }
+            }
+
+            QbQuestion question = await _qbQuestionService.GetRandomAsync(levelInt);
 
             if (question == null)
             {
