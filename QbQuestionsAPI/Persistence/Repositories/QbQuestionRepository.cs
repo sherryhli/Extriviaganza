@@ -40,7 +40,7 @@ namespace QbQuestionsAPI.Persistence.Repositories
             string query = $@"SELECT *
                               FROM {innerQuery}
                               AS q
-                              WHERE q.RowNumber = {random};";
+                              WHERE q.RowNumber = {random + 1};";
 
             var result = await _context.QbQuestions
                 .FromSql<QbQuestion>(query)
