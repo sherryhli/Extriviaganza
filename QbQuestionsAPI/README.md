@@ -70,7 +70,7 @@ Sample response: `200 OK`
 }
 ```
 
-Optional query string parameter of `level` with 1 = Middle School, 2 = High School, 3 = Collegiate, 4 = Trash. If not specified, the random question can be of any of these levels.
+Optional query string parameter of `level` with possible values of MiddleSchool, HighSchool, Collegiate, or Trash (**not case-sensitive**). If not specified, the random question can be of any of these levels. If an invalid parameter is supplied, `400 Bad Request` is returned.
 
 If no question is retrieved, `404 Not Found` is returned.
 
