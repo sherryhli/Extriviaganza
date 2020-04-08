@@ -14,32 +14,32 @@ Errors: `fatal error`, `duplicate userId`
 
 ### `get question`
 
-Parameters: `gameId` (uuid), `level` (string)<br>
-After receiving this event, the backend will make a GET request to the `/random` endpoint of [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI), with the optional query parameter `level`, which can have values `ms`, `hs`, `c` or `t`. If successful, the server will emit `receive question` and all players in `gameId` will receive the question.
+Parameters: `level` (string)<br>
+After receiving this event, the backend will make a GET request to the `/random` endpoint of [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI), with the optional query parameter `level`, which can have values `MiddleSchool`, `HighSchool`, `Collegiate` or `Trash` (**not case-sensitive**). If successful, the server will emit `receive question` and all players in the game associated the socket that invoked this event will receive the question.
 
 Errors: `retryable error`, `fatal error`
 ***
 
 ### `buzz`
 
-Parameters: `gameId` (uuid), `userId` (string)<br>
-When the server receives this event, it emits `buzz acknowledged` to the player with `userId` and emits `other player buzzed` to all others players in the game with `gameId`.
+Parameters: `userId` (string)<br>
+When the server receives this event, it emits `buzz acknowledged` to the player with `userId` and emits `other player buzzed` to all others players in `userId`'s game.
 
 Errors: none
 ***
 
 ### `correct answer`
 
-Parameters: `gameId` (uuid), `userId` (string), `power` (boolean)<br>
-When the server receives this event, it adds `power ? 15 : 10` points to `userId`'s score. If successful, it emits `player answered correctly` and returns the updated game state to all players in `gameId`.
+Parameters: `userId` (string), `power` (boolean)<br>
+When the server receives this event, it adds `power ? 15 : 10` points to `userId`'s score. If successful, it emits `player answered correctly` and returns the updated game state to all players in `userId`'s game.
 
 Errors: `retryable error`
 ***
 
 ### `incorrect answer`
 
-Parameters: `gameId` (uuid), `userId` (string), `answer` (string), `power` (boolean)<br>
-After receiving this event, the server applies a 5 point penalty to `userId`'s score if `power` is true (this means the player has interrupted) and emits `player answered incorrectly` to all players in `gameId`. If `power` is false, the server only emits `player answered incorrectly`.
+Parameters: `userId` (string), `answer` (string), `power` (boolean)<br>
+After receiving this event, the server applies a 5 point penalty to `userId`'s score if `power` is true (this means the player has interrupted) and emits `player answered incorrectly` to all players in `userId`'s game. If `power` is false, the server only emits `player answered incorrectly`.
 
 Errors: `retryable error`
 ***

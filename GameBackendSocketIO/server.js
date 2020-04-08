@@ -132,32 +132,32 @@ io.on('connection', socket => {
     });
 
 
-    socket.on('get question', (gameId, level) => {
-        io.sockets.in(gameId).emit('re-enable buzz');
+    socket.on('get question', (level) => {
+        io.sockets.in(socket.gameId).emit('re-enable buzz');
 
         const levelQueryParam = level ? `?level=${level}` : '';
         const url = `http://qbquestionsapi.azurewebsites.net/api/qbquestions/random${levelQueryParam}`;
 
-        collection.findOne({ "gameId": gameId }, (error, result) => {
+        collection.findOne({ "gameId": socket.gameId }, (error, result) => {
             if (error) {
-                io.sockets.in(gameId).emit('retryable error');
+                io.sockets.in(socket.gameId).emit('retryable error');
             } else {
                 if (result) {
                     const auth = `Bearer ${result.token}`;
                     axios.get(url, { headers: { Authorization: auth } })
                         .then(response => {
-                            io.sockets.in(gameId).emit('receive question', response.data);
+                            io.sockets.in(socket.gameId).emit('receive question', response.data);
                         }).catch(error => {
                             console.log('Error retrieving question');
                             console.log(error);
-                            io.sockets.in(gameId).emit('retryable error');
+                            io.sockets.in(socket.gameId).emit('retryable error');
                         });
                 } else {
-                    console.log(`${gameId} is not found in the DB`);
-                    io.sockets.in(gameId).emit('fatal error');
-                    const socketsInGame = getSocketsInGame(gameId);
+                    console.log(`${socket.gameId} is not found in the DB`);
+                    io.sockets.in(socket.gameId).emit('fatal error');
+                    const socketsInGame = getSocketsInGame(socket.gameId);
                     socketsInGame.forEach(s => {
-                        s.leave(gameId, () => {
+                        s.leave(socket.gameId, () => {
                             s.disconnect(true);
                         })
                     });
@@ -167,22 +167,22 @@ io.on('connection', socket => {
     });
 
 
-    socket.on('buzz', (gameId, userId) => {
+    socket.on('buzz', (userId) => {
         socket.emit('buzz acknowledged');
-        socket.broadcast.to(gameId).emit('other player buzzed', `${userId} buzzed`);
+        socket.broadcast.to(socket.gameId).emit('other player buzzed', `${userId} buzzed`);
     });
 
 
-    socket.on('correct answer', (gameId, userId, power) => {
+    socket.on('correct answer', (userId, power) => {
         const points = power ? 15 : 10;
 
         collection.findOneAndUpdate(
-            { "gameId": gameId, "players.userId": userId },
+            { "gameId": socket.gameId, "players.userId": userId },
             { $inc: { "players.$.score": points } },
             { returnOriginal: false },
             (error, result) => {
                 if (error) {
-                    io.sockets.in(gameId).emit('retryable error');
+                    io.sockets.in(socket.gameId).emit('retryable error');
                 } else {
                     io.sockets.in(socket.gameId).emit('player answered correctly', result.value);
                 }
@@ -191,21 +191,21 @@ io.on('connection', socket => {
     });
 
 
-    socket.on('incorrect answer', (gameId, userId, answer, power) => {
+    socket.on('incorrect answer', (userId, answer, power) => {
         if (!power) {
             // sending null as last argument since game state does not need to be updated
-            io.sockets.in(gameId).emit('player answered incorrectly', userId, answer, null);
+            io.sockets.in(socket.gameId).emit('player answered incorrectly', userId, answer, null);
         } else {
             // incorrect answer on power is an "interrupt" and there's a 5 point penalty
             collection.findOneAndUpdate(
-                { "gameId": gameId, "players.userId": userId },
+                { "gameId": socket.gameId, "players.userId": userId },
                 { $inc: { "players.$.score": -5 } },
                 { returnOriginal: false },
                 (error, result) => {
                     if (error) {
-                        io.sockets.in(gameId).emit('retryable error');
+                        io.sockets.in(socket.gameId).emit('retryable error');
                     } else {
-                        io.sockets.in(gameId).emit('player answered incorrectly', userId, answer, result.value);
+                        io.sockets.in(socket.gameId).emit('player answered incorrectly', userId, answer, result.value);
                     }
                 }
             );

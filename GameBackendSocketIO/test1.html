@@ -12,14 +12,18 @@
         var socket = io();
         socket.emit('join game', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1');
         setTimeout(function () {
-            socket.emit('get question', '25e38b6a-5842-4fc2-bd09-98648d345d0c', null)
+            socket.emit('get question', null)
         }, 2000);
         setTimeout(function () {
-            socket.emit('buzz', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1')
-        }, 3000);
+            socket.emit('buzz', 'user1')
+        }, 5000);
         setTimeout(function () {
-            socket.emit('correct answer', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1', false)
+            socket.emit('correct answer', 'user1', false)
         }, 10000);
+        setTimeout(function () {
+            socket.emit('incorrect answer', 'user1', 'wrong answer', false)
+        }, 13000);
+
 
         socket.on('player joined', function (state) {
             console.log(state);
