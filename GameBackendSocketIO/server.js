@@ -46,7 +46,7 @@ function getSocketsInGame(gameId) {
 io.on('connection', socket => {
     console.log(`A user connected, socketId = ${socket.id}`);
 
-    socket.on('join game', (gameId, userId) => {
+    socket.on('join game', (gameId, userId, existingGame) => {
         socket.join(gameId);
         // adding gameId as a custom property to socket
         socket.gameId = gameId;
@@ -87,7 +87,7 @@ io.on('connection', socket => {
                             }
                         }
                     );
-                } else {
+                } else if (!existingGame) {
                     console.log('Creating new game and adding player to it');
 
                     // fetch auth token and save to DB
@@ -125,6 +125,12 @@ io.on('connection', socket => {
                         socket.leave(gameId, () => {
                             socket.disconnect(true);
                         });
+                    });
+                } else {
+                    console.log(`Attempted to join existing game but game with gameId = ${gameId} does not exist`);
+                    socket.emit('fatal error');
+                    socket.leave(gameId, () => {
+                        socket.disconnect(true);
                     });
                 }
             }

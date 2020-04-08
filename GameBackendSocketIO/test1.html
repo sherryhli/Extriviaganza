@@ -10,7 +10,7 @@
 <script>
     $(function () {
         var socket = io();
-        socket.emit('join game', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1');
+        socket.emit('join game', '25e38b6a-5842-4fc2-bd09-98648d345d0c', 'user1', false);
         setTimeout(function () {
             socket.emit('get question', null)
         }, 2000);

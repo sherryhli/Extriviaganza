@@ -6,8 +6,8 @@ A Node.js application built with socket.io, Express.js and MongoDB.
 
 ### `join game`
 
-Parameters: `gameId` (uuid), `userId` (string)<br>
-When the backend receives this event, it adds the user identified by `userId` to the game identified by `gameId`, creating the game if it doesn't exist yet. An association is also created between `userId` and that user's socket id. If successful, the server will emit `player joined` and return the updated game state to all players in `gameId`.
+Parameters: `gameId` (uuid), `userId` (string), `existingGame` (boolean)<br>
+When the backend receives this event, it adds the user identified by `userId` to the game identified by `gameId` if `existingGame = true` and the game actually exists in the DB. If `existingGame = true` but the game is not found in the DB, a `fatal error` is emitted to `userId`. If `existingGame = false`, a new game gets created and `userId` is added to it. An association is created between `userId` and that user's socket id. If successful, the server will emit `player joined` and return the updated game state to all players in `gameId`.
 
 Errors: `fatal error`, `duplicate userId`
 ***
