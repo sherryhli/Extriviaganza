@@ -66,7 +66,8 @@ setInterval(() => {
             axios.get(`${QBQUESTIONS_API_BASE_URL}/qbquestions/random`, { headers: { Authorization: auth } })
                 .then(response => {
                     const question = response.data;
-                    const level = question.level;
+                    const levelSplitAtSpace = question.level.split(' ');
+                    const level = levelSplitAtSpace[0] + levelSplitAtSpace[1];
                     const key = `${REDIS_QUESTIONS_KEY}:${level}`;
                     redisClient.sadd(key, JSON.stringify(question));
                 }).catch(error => {
