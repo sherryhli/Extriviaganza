@@ -92,8 +92,8 @@ io.on('connection', socket => {
 
                     // fetch auth token and save to DB
                     axios.post('http://qbquestionsapi.azurewebsites.net/api/authenticate', {
-                        "username": process.env.QBQUESTIONS_API_USERNAME,
-                        "password": process.env.QBQUESTIONS_API_PASSWORD
+                        "username": process.env.QBQUESTIONS_API_WEB_USERNAME,
+                        "password": process.env.QBQUESTIONS_API_WEB_PASSWORD
                     }).then(response => {
                         console.log(response.data);
 
