@@ -20,7 +20,7 @@ const REDIS_QUESTIONS_KEY = 'questions';
 
 
 redisClient.on('connect', () => {
-    console.log(`Connected to Redis server at ${REDIS_URL}`);
+    console.log('Connected to Redis server');
 });
 
 
