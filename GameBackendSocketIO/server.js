@@ -190,6 +190,7 @@ io.on('connection', socket => {
             }
 
             if (err || !reply || parseError) {
+                console.log('Fetching question from API');
                 // TODO: store token in Redis so MongoDB query can be avoided? Look into security of Heroku Redis
                 // This means worker process would need to ensure there is always valid token available
                 collection.findOne({ "gameId": socket.gameId }, (error, result) => {
@@ -221,6 +222,7 @@ io.on('connection', socket => {
                     }
                 });
             } else {
+                console.log('Fetched question from Redis');
                 io.sockets.in(socket.gameId).emit('receive question', question);
             }
         });
