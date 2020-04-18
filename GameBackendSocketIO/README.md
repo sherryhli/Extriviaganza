@@ -1,8 +1,12 @@
 # Game Backend
 
-A Node.js application built with socket.io, Express.js and MongoDB.
+A Node.js application built with socket.io, Express.js, MongoDB, and Redis.
 
-## Events
+`server.js` facilitates the gameplay and real-time communication between players while `worker.js` runs as a background process (on a separate Heroku dyno) and populates a Redis cache of questions to speed up question retrieval.
+
+## Server
+
+The server handles the following events:
 
 ### `join game`
 
@@ -15,7 +19,7 @@ Errors: `fatal error`, `duplicate userId`
 ### `get question`
 
 Parameters: `level` (string)<br>
-After receiving this event, the backend will make a GET request to the `/random` endpoint of [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI), with the optional query parameter `level`, which can have values `MiddleSchool`, `HighSchool`, `Collegiate` or `Trash` (**not case-sensitive**). If successful, the server will emit `receive question` and all players in the game associated the socket that invoked this event will receive the question.
+After receiving this event, the server will attempt to retrieve a question from the cache. The set name is either supplied in the `level` parameter (`MiddleSchool`, `HighSchool`, `Collegiate` or `Trash`), or randomly chosen if `level` is null. (Note: level names are **not case-sensitive**). If the server fails to retrieve a question from the cache, then a GET request to the `/random` endpoint of [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI) is made with the appropriate query parameter. If there is a successful retrieval from either the cache or the API, the server will emit `receive question` and all players in the game associated the socket that invoked this event will receive the question.
 
 Errors: `retryable error`, `fatal error`
 ***
@@ -62,6 +66,13 @@ Parameters: none<br>
 This event is emitted by the server if a player tries to use a `userId` that's already being used by another player in their game.
 
 
+## Worker
+
+The worker continuously makes GET requests to the `/random` endpoint of [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI) in order to populate the Redis cache upfront with questions of all levels. The cache is implemented as a collection of sets, with questions of each level being in a separate set, e.g. `questions:MiddleSchool`, `questions:HighSchool`, etc. Sets were chosen over lists as they decrease the likelihood of requests made close in time returning the same question, and also limits memory usage as only unique questions are stored in each set.
+
+The worker should be scaled down as we approach the 25 MB memory limit of free Heroku Redis (not likely anytime soon since there aren't enough questions in [QbQuestionsAPI](https://github.com/sherryhli/Extriviaganza/tree/master/QbQuestionsAPI)'s database). Although there is an LRU eviction policy, it will result in loss of an entire set of questions, which is not ideal.
+
+
 ## Deployment
 
 The backend is deployed to Heroku at https://extriviaganza.herokuapp.com. There are currently two test endpoints: `/test1` and `/test2` that serve as very simple clients.
@@ -93,9 +104,14 @@ To check status of dynos:
 heroku ps
 ```
 
-To run 1 dyno:
+To run 1 web dyno:
 ```
 heroku ps:scale web=1
+```
+
+Scale down worker dyno:
+```
+heroku ps:scale worker=0
 ```
 
 To restart dyno:

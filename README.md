@@ -10,7 +10,7 @@ Extriviaganza is a project inspired by Protobowl, an online quizbowl game that I
 
 There are 5 different components to this project, with 4 already being worked on. More detailed documentation can be found in each component's README. The components are kept in a single repo for organization purposes but most are actually deployable units on their own.
 
-Architecture diagram, updated April 1, 2020:
+Architecture diagram, updated April 18, 2020:
 
 ![Architecture-Diagram](architecture_diagram.png)
 
@@ -40,7 +40,7 @@ This is a .NET Core REST API supporting CRUD operations that interacts with a SQ
 
 ### [Game Backend](https://github.com/sherryhli/Extriviaganza/tree/master/GameBackendSocketIO)
 
-The game backend is an Express.js server that makes use of socket.io, which allows players to interact in real-time when playing the game. socket.io supports the concept of rooms, which is great because it makes it easy to enable isolation between games. MongoDB is used to store game states.
+The game backend is an Express.js server that makes use of socket.io, which allows players to interact in real-time when playing the game. socket.io supports the concept of rooms, which is great because it makes it easy to enable isolation between games. MongoDB is used to store game states and Redis is used to cache questions.
 
 ### Game Frontend
 
