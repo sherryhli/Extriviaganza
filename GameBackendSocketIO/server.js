@@ -58,6 +58,8 @@ function getSocketsInGame(gameId) {
 }
 
 
+io.set('origins', '*:*');
+
 io.on('connection', socket => {
     console.log(`A user connected, socketId = ${socket.id}`);
 
