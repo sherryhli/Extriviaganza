@@ -26,7 +26,7 @@ if ( Test-Path -Path $inputFile -PathType Container ) {
    }
 }
 else {
-    $params = $parserName, $inputFile.FullName, $level, $tournament, $year
+    $params = $parserName, $inputFile, $level, $tournament, $year
     Write-Host $params -ForegroundColor Yellow
     & "$parser" $params
 }
