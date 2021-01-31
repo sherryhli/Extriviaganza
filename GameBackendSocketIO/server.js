@@ -58,7 +58,7 @@ function getSocketsInGame(gameId) {
 }
 
 
-io.set('origins', '*:*');
+io.origins(['http://extriviaganza.herokuapp.com']);
 
 io.on('connection', socket => {
     console.log(`A user connected, socketId = ${socket.id}`);
